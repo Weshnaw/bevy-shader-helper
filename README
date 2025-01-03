@@ -1,0 +1,12 @@
+A WIP tool to quickly generate any boilerplate from a shader
+
+Inspired from [prost-build](https://github.com/tokio-rs/prost), and [bevy_easy_compute](https://github.com/AnthonyTornetta/bevy_easy_compute)
+
+
+Right now this generates the rust code via a liquid template engine; 
+but I imagine it would be more portable if we could avoid the need for templating, and we could then avoid putting the templates into the binary
+
+I would like to expand this tool to handle any/every type of shader, 
+but right now it really only implements things that I've used in personal projects
+
+WARNING: the build tool assumes that bevy is installed (Could we have a compile time check for this?)

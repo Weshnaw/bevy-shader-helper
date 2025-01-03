@@ -1,0 +1,8 @@
+[workspace]
+members = ["bevy-compute-build", "bevy-compute-macros"]
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+
+[workspace.dependencies]
