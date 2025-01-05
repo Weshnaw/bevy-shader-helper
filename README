@@ -1,12 +1,23 @@
-A WIP tool to quickly generate any boilerplate from a shader
+A WIP tool to quickly generate shader boiler plate for bevy
 
 Inspired from [prost-build](https://github.com/tokio-rs/prost), and [bevy_easy_compute](https://github.com/AnthonyTornetta/bevy_easy_compute)
 
+# TODOs Short Term
+- [ ] Implement derive macros
+    - [ ] shader_data_details
+    - [ ] grouped_buffers
+- [ ] Implement builder
+    - [ ] Handle Entries (Only Compute for now)
+    - [ ] Handle Buffers
+    - [ ] Generate valid rust file
+    - [ ] Insert rust file into the proper directory
+    - [ ] Create macro to import generated rust file
 
-Right now this generates the rust code via a liquid template engine; 
-but I imagine it would be more portable if we could avoid the need for templating, and we could then avoid putting the templates into the binary
+# TODOs Medium Term
+- [ ] Cleanup the imports to use the more specific ones instead of the entirety of bevy
+- [ ] Cleanup re-exports to be be more descriptive
 
-I would like to expand this tool to handle any/every type of shader, 
-but right now it really only implements things that I've used in personal projects
-
-WARNING: the build tool assumes that bevy is installed (Could we have a compile time check for this?)
+# TODOs Long Term
+- [ ] Allow for more dynamic shaders (i.e. Bevy's GOL example where they swap the image buffers)
+- [ ] Allow for Custom Shader Nodes
+- [ ] Implement some system or other types of shaders (i.e. Vertex and Fragment shaders)

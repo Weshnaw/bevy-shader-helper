@@ -1,10 +1,11 @@
 #![allow(unused_variables, dead_code)]
 use naga::{
-    Arena, EntryPoint, GlobalVariable, Handle, ImageClass, ImageDimension, Scalar, ShaderStage,
+    Arena, EntryPoint, GlobalVariable, Handle, ImageClass, ImageDimension, Scalar,
     StructMember, Type, TypeInner, UniqueArena, front::wgsl,
 };
 use thiserror::Error;
 use tracing::{debug, info};
+use wgpu_types::ShaderStages;
 
 pub(crate) fn compile_shader<T1: AsRef<str>, T2: AsRef<str>, T3: AsRef<str>>(
     name: T1,
@@ -28,7 +29,7 @@ pub enum EntryError {
 
 // TODO: better error return, i'm just being lazy
 // TODO: return a bitflag result to allow for multiple shader stages to be acknowledged
-fn handle_entries(entries: &[EntryPoint]) -> crate::Result<ShaderStage> {
+fn handle_entries(entries: &[EntryPoint]) -> crate::Result<ShaderStages> {
     let _ = entries
         .iter()
         .map(|entry| (&entry.name, entry.stage));
