@@ -3,9 +3,7 @@ use bevy::{
     prelude::*,
     render::{gpu_readback::ReadbackComplete, render_resource::Extent3d},
 };
-use bevy_shader_helper::internals::{
-    BufferReader, ImageBuilder, ImageData, ShaderBuilder, ShaderEntries, ShaderEntry,
-};
+use bevy_shader_helper::prelude::*;
 use shader::{Foo, HelloBuffers, HelloData, HelloEntries, HelloShaderPlugin};
 
 mod shader;
@@ -25,12 +23,12 @@ fn main() {
                 data: ImageData::Zeros,
             },
         })
-        .dispatches(ShaderEntries {
-            on_startup: vec![ShaderEntry {
+        .dispatches(Dispatch {
+            on_startup: vec![Entry {
                 entry: HelloEntries::Main,
                 workgroup: (3, 1, 1),
             }],
-            on_update: vec![ShaderEntry {
+            on_update: vec![Entry {
                 entry: HelloEntries::Update,
                 workgroup: (3, 1, 1),
             }],

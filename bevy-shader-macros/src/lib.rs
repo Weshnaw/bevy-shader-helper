@@ -1,14 +1,27 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+use proc_macro::TokenStream;
+use quote::quote;
+
+#[proc_macro_derive(ShaderEntry)]
+pub fn entry_macro_derive(input: TokenStream) -> TokenStream {
+    let ast = syn::parse(input).unwrap();
+
+    impl_entry_macro(&ast)
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+fn impl_entry_macro(ast: &syn::DeriveInput) -> TokenStream {
+    let name = &ast.ident;
+    let impl_tokens = quote! {
+        impl ShaderEntry for #name {
+            fn as_key(&self) -> usize {
+            //     match self {
+            //         #name::Main => 0,
+            //         #name::Update => 1,
+            //     }
+            // }
+                todo!();
+            }
+        }
+    };
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+    impl_tokens.into()
 }

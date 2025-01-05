@@ -376,11 +376,16 @@ name = "bevy-shader-helper"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy-shader-macros",
 ]
 
 [[package]]
 name = "bevy-shader-macros"
 version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "bevy_a11y"

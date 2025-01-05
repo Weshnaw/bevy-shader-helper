@@ -1,2 +1,2 @@
 [env]
-RUST_LOG = "warn,bevy_shader=debug"
+# RUST_LOG = "warn,bevy_shader=debug"
