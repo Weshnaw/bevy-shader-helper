@@ -9,30 +9,20 @@ use shader::{Foo, HelloBuffers, HelloData, HelloEntries, HelloShaderPlugin};
 mod shader;
 
 fn main() {
-    let shader: HelloShaderPlugin = ShaderBuilder::default()
+    let shader = HelloShaderPlugin::builder()
         .initial_data(HelloData {
             a: vec![1, 2, 3],
             b: Foo { bar: 1, bazz: 2. },
             c: vec3(1., 2., 3.),
-            d: ImageBuilder {
-                size: Extent3d {
-                    width: 3,
-                    height: 1,
-                    depth_or_array_layers: 1,
-                },
-                data: ImageData::Zeros,
-            },
+            d: Extent3d {
+                width: 3,
+                height: 1,
+                depth_or_array_layers: 1,
+            }
+            .into(),
         })
-        .dispatches(Dispatch {
-            on_startup: vec![Entry {
-                entry: HelloEntries::Main,
-                workgroup: (3, 1, 1),
-            }],
-            on_update: vec![Entry {
-                entry: HelloEntries::Update,
-                workgroup: (3, 1, 1),
-            }],
-        })
+        .on_startup([(HelloEntries::Main, (3, 1, 1)).into()])
+        .on_update([(HelloEntries::Update, (3, 1, 1)).into()])
         .build();
 
     App::new()

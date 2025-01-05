@@ -2,19 +2,29 @@ use std::marker::PhantomData;
 
 use bevy::render::render_resource::Extent3d;
 
-use crate::internals::entries::Dispatch;
+use crate::internals::entries::{Dispatch, Entry};
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub enum ImageData {
+    #[default]
+    Zeros,
     Fill([u8; 4]),
     Data(Vec<u8>),
-    Zeros,
 }
 
 #[derive(Clone)]
 pub struct ImageBuilder {
     pub size: Extent3d,
     pub data: ImageData,
+}
+
+impl From<Extent3d> for ImageBuilder {
+    fn from(value: Extent3d) -> Self {
+        Self {
+            size: value,
+            data: Default::default(),
+        }
+    }
 }
 
 pub struct ShaderBuilder<T: ?Sized, DataTy, EntriesTy> {
@@ -36,20 +46,43 @@ impl<DataTy, EntriesTy, T: BuildableShader<DataTy, EntriesTy>> Default
 }
 
 impl<DataTy, EntriesTy, T: BuildableShader<DataTy, EntriesTy>> ShaderBuilder<T, DataTy, EntriesTy> {
-    pub fn initial_data(self, data: DataTy) -> Self {
-        Self {
-            initial_data: Some(data),
-            dispatches: self.dispatches,
-            _phantom: self._phantom,
-        }
+    pub fn initial_data(mut self, data: DataTy) -> Self {
+        self.initial_data = Some(data);
+
+        self
     }
 
-    pub fn dispatches(self, dispatches: Dispatch<EntriesTy>) -> Self {
-        Self {
-            initial_data: self.initial_data,
-            dispatches: Some(dispatches),
-            _phantom: self._phantom,
-        }
+    pub fn on_startup<E: Into<Vec<Entry<EntriesTy>>>>(mut self, entries: E) -> Self {
+        let dispatch = match self.dispatches {
+            Some(mut dispatch) => {
+                dispatch.on_startup = entries.into();
+                dispatch
+            }
+            None => Dispatch {
+                on_startup: entries.into(),
+                on_update: vec![],
+            },
+        };
+
+        self.dispatches = Some(dispatch);
+
+        self
+    }
+    pub fn on_update<E: Into<Vec<Entry<EntriesTy>>>>(mut self, entries: E) -> Self {
+        let dispatch = match self.dispatches {
+            Some(mut dispatch) => {
+                dispatch.on_update = entries.into();
+                dispatch
+            }
+            None => Dispatch {
+                on_startup: vec![],
+                on_update: entries.into(),
+            },
+        };
+
+        self.dispatches = Some(dispatch);
+
+        self
     }
 
     pub fn build(self) -> T {
@@ -59,4 +92,10 @@ impl<DataTy, EntriesTy, T: BuildableShader<DataTy, EntriesTy>> ShaderBuilder<T, 
 
 pub trait BuildableShader<DataTy, EntriesTy> {
     fn from_builder(builder: ShaderBuilder<Self, DataTy, EntriesTy>) -> Self;
+    fn builder() -> ShaderBuilder<Self, DataTy, EntriesTy>
+    where
+        Self: Sized,
+    {
+        ShaderBuilder::default()
+    }
 }

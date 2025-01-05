@@ -12,6 +12,23 @@ pub struct Entry<EntryTy> {
     pub entry: EntryTy,
     pub workgroup: (u32, u32, u32),
 }
+impl<T> From<(T, u32, u32, u32)> for Entry<T> {
+    fn from(value: (T, u32, u32, u32)) -> Self {
+        Self {
+            entry: value.0,
+            workgroup: (value.1, value.2, value.3),
+        }
+    }
+}
+impl<T, V: Into<(u32, u32, u32)>> From<(T, V)> for Entry<T> {
+    fn from(value: (T, V)) -> Self {
+        Self {
+            entry: value.0,
+            workgroup: value.1.into(),
+        }
+    }
+}
+
 // TODO impl From (T, 1, 2, 3) / (T, (1, 2, 3))
 
 impl<EntryTy: ShaderEntry> Entry<EntryTy> {
@@ -39,10 +56,19 @@ impl<EntryTy: ShaderEntry> Entry<EntryTy> {
 }
 
 #[derive(Clone)]
-pub struct Dispatch<EntryTy> {
+pub(crate) struct Dispatch<EntryTy> {
     pub on_startup: Vec<Entry<EntryTy>>,
     pub on_update: Vec<Entry<EntryTy>>,
     // TODO: on_request: Vec<(receiver, ShaderDispatch)>
+}
+
+impl<T, E1: Into<Vec<Entry<T>>>, E2: Into<Vec<Entry<T>>>> From<(E1, E2)> for Dispatch<T> {
+    fn from(value: (E1, E2)) -> Self {
+        Self {
+            on_startup: value.0.into(),
+            on_update: value.1.into(),
+        }
+    }
 }
 
 // TODO: consider refactoring so that you pass in a enum to specify if on_update or on_startup
