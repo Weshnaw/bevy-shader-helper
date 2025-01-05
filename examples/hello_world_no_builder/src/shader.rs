@@ -121,11 +121,17 @@ impl GroupedBuffers<HelloData, 4> for HelloBuffers {
         d: HelloData,
     ) {
         commands.insert_resource(Self {
-            a: create_storage_buffer(buffers, d.a).into(),
-            b: create_storage_buffer(buffers, d.b).into(),
-            c: create_storage_buffer(buffers, d.c).into(),
-            d: create_texture_buffer(images, d.d, TextureFormat::R32Float, TextureDimension::D2)
-                .into(),
+            a: create_storage_buffer(buffers, d.a, true).into(),
+            b: create_storage_buffer(buffers, d.b, false).into(),
+            c: create_storage_buffer(buffers, d.c, false).into(),
+            d: create_texture_buffer(
+                images,
+                d.d,
+                TextureFormat::R32Float,
+                TextureDimension::D2,
+                true,
+            )
+            .into(),
         });
     }
 

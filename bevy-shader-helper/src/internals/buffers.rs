@@ -7,8 +7,7 @@ use bevy::{
         gpu_readback::Readback,
         render_asset::RenderAssets,
         render_resource::{
-            BindGroupEntries, ShaderType, TextureDimension, TextureFormat,
-            encase::internal::WriteInto,
+            encase::internal::WriteInto, BindGroupEntries, BufferUsages, ShaderType, TextureDimension, TextureFormat, TextureUsages
         },
         storage::{GpuShaderStorageBuffer, ShaderStorageBuffer},
         texture::GpuImage,
@@ -42,8 +41,12 @@ pub trait GroupedBuffers<DataTy: Clone, const B: usize> {
 pub fn create_storage_buffer<DataTy: ShaderType + WriteInto>(
     buffers: &mut Assets<ShaderStorageBuffer>,
     data: DataTy,
+    writeable: bool,
 ) -> Handle<ShaderStorageBuffer> {
-    let data = ShaderStorageBuffer::from(data);
+    let mut data = ShaderStorageBuffer::from(data);
+    if writeable {
+        data.buffer_description.usage |= BufferUsages::COPY_SRC;
+    }
     buffers.add(data)
 }
 
@@ -52,6 +55,7 @@ pub fn create_texture_buffer(
     builder: ImageBuilder,
     format: TextureFormat,
     dimension: TextureDimension,
+    writeable: bool,
 ) -> Handle<Image> {
     let asset_usage = RenderAssetUsages::RENDER_WORLD;
 
@@ -76,8 +80,10 @@ pub fn create_texture_buffer(
             )
         }
     };
-    image.texture_descriptor.usage |= bevy::render::render_resource::TextureUsages::STORAGE_BINDING;
-
+    image.texture_descriptor.usage |= TextureUsages::STORAGE_BINDING;
+    if writeable {
+        image.texture_descriptor.usage |= TextureUsages::COPY_SRC;
+    }
     images.add(image)
 }
 
