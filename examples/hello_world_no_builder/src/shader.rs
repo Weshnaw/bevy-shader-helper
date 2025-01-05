@@ -5,10 +5,9 @@ use bevy::{
         render_asset::RenderAssets,
         render_graph::RenderLabel,
         render_resource::{
-            BindGroupEntries, BindGroupLayout, BindGroupLayoutEntries, CachedComputePipelineId,
-            IntoBinding, PipelineCache, ShaderStages, ShaderType, StorageTextureAccess,
+            BindGroupEntries,
+            IntoBinding, ShaderType,
             TextureDimension, TextureFormat,
-            binding_types::{storage_buffer, storage_buffer_read_only, texture_storage_2d},
         },
         storage::{GpuShaderStorageBuffer, ShaderStorageBuffer},
         texture::GpuImage,
@@ -36,43 +35,12 @@ pub struct Foo {
     pub bazz: f32,
 }
 
-#[derive(Clone)]
+#[derive(Clone, ShaderDataDetails)]
 pub struct HelloData {
     pub a: Vec<u32>,
     pub b: Foo,
     pub c: Vec3,
     pub d: ImageBuilder,
-}
-
-impl ShaderDetails<4, 2> for HelloData {
-    fn buffer_entries(stage: ShaderStages) -> BindGroupLayoutEntries<4> {
-        BindGroupLayoutEntries::sequential(
-            stage,
-            (
-                storage_buffer::<Vec<u32>>(false),
-                storage_buffer_read_only::<Foo>(false),
-                storage_buffer_read_only::<Vec3>(false),
-                texture_storage_2d(TextureFormat::R32Float, StorageTextureAccess::ReadWrite),
-            ),
-        )
-    }
-
-    fn entries(
-        pipeline_cache: &PipelineCache,
-        layout: BindGroupLayout,
-        shader: Handle<Shader>,
-    ) -> [CachedComputePipelineId; 2] {
-        [
-            Self::create_entry(pipeline_cache, layout.clone(), shader.clone(), "main", None),
-            Self::create_entry(
-                pipeline_cache,
-                layout.clone(),
-                shader.clone(),
-                "update",
-                None,
-            ),
-        ]
-    }
 }
 
 // I don't like this but I do not know how to improve it

@@ -6,7 +6,6 @@ pub fn expand(input: TokenStream) -> TokenStream {
     let ast = syn::parse_macro_input!(input as DeriveInput);
 
     let name = ast.ident;
-
     let data = ast.data;
 
     let variants = match data {
@@ -25,7 +24,7 @@ pub fn expand(input: TokenStream) -> TokenStream {
         }
     };
 
-    TokenStream::from(expanded)
+    expanded.into()
 }
 
 fn enumify(data: (usize, Variant)) -> impl ToTokens {

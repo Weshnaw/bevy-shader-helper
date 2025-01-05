@@ -8,7 +8,7 @@ use bevy::{
     },
 };
 
-use super::{binding::ShaderDetails, entries::ShaderEntry};
+use super::{binding::ShaderDataDetails, entries::ShaderEntry};
 
 pub trait Pipeline {
     fn label() -> Option<&'static str> {
@@ -35,7 +35,7 @@ impl<const B: usize, const E: usize, DataTy> Pipeline for ComputePipeline<B, E, 
     }
 }
 
-impl<const B: usize, const E: usize, DataTy: ShaderDetails<B, E>> FromWorld
+impl<const B: usize, const E: usize, DataTy: ShaderDataDetails<B, E>> FromWorld
     for ComputePipeline<B, E, DataTy>
 {
     fn from_world(world: &mut bevy::prelude::World) -> Self {

@@ -1,11 +1,7 @@
-use bevy_shader_macros::ShaderEntry;
+use bevy_shader_helper::internals::prelude::ShaderEntry;
 
 #[test]
 fn test_macro() {
-    trait ShaderEntry {
-        fn as_key(&self) -> usize;
-    }
-
     #[derive(ShaderEntry)]
     enum TestEntry {
         Main,

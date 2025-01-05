@@ -17,7 +17,8 @@ use bevy::{
 
 use super::{buffers::GroupedBuffers, pipeline::Pipeline};
 
-pub trait ShaderDetails<const B: usize, const E: usize> {
+pub use bevy_shader_macros::ShaderDataDetails;
+pub trait ShaderDataDetails<const B: usize, const E: usize> {
     fn buffer_entries(stage: ShaderStages) -> BindGroupLayoutEntries<B>;
 
     fn bind_group_label() -> Option<&'static str> {

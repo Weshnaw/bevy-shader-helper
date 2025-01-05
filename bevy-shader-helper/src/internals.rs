@@ -7,7 +7,7 @@ pub mod pipeline;
 pub mod plugin;
 
 pub mod prelude {
-    pub use super::binding::ShaderDetails;
+    pub use super::binding::ShaderDataDetails;
     pub use super::buffers::*;
     pub use super::entries::ShaderEntry;
     pub use super::pipeline::ComputePipeline;

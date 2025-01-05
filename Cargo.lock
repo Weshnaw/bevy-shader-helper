@@ -383,6 +383,7 @@ dependencies = [
 name = "bevy-shader-macros"
 version = "0.1.0"
 dependencies = [
+ "bevy-shader-helper",
  "quote",
  "syn",
 ]
