@@ -4,10 +4,12 @@ use bevy::{
     image::Image,
     prelude::{Commands, ResMut},
     render::{
+        extract_resource::{ExtractResource, ExtractResourcePlugin},
         gpu_readback::Readback,
         render_asset::RenderAssets,
         render_resource::{
-            encase::internal::WriteInto, BindGroupEntries, BufferUsages, ShaderType, TextureDimension, TextureFormat, TextureUsages
+            BindGroupEntries, BufferUsages, ShaderType, TextureDimension, TextureFormat,
+            TextureUsages, encase::internal::WriteInto,
         },
         storage::{GpuShaderStorageBuffer, ShaderStorageBuffer},
         texture::GpuImage,
@@ -22,7 +24,12 @@ pub trait GroupedBuffers<DataTy: Clone, const B: usize> {
         None
     }
 
-    fn create_resource_extractor_plugins(app: &mut App);
+    fn create_resource_extractor_plugins(app: &mut App)
+    where
+        Self: Sized + ExtractResource,
+    {
+        app.add_plugins((ExtractResourcePlugin::<Self>::default(),));
+    }
 
     fn get_bindings<'a>(
         &'a self,

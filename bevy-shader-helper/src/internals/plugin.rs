@@ -4,11 +4,9 @@ use bevy::{
     app::{App, Plugin, PreStartup},
     asset::Assets,
     image::Image,
-    prelude::{Commands, FromWorld, IntoSystemConfigs, ResMut, Resource, not, resource_exists},
+    prelude::{not, resource_exists, Commands, FromWorld, IntoSystemConfigs, ResMut, Resource},
     render::{
-        Render, RenderSet,
-        render_graph::{RenderGraph, RenderLabel},
-        storage::ShaderStorageBuffer,
+        extract_resource::ExtractResource, render_graph::{RenderGraph, RenderLabel}, storage::ShaderStorageBuffer, Render, RenderSet
     },
 };
 
@@ -35,7 +33,7 @@ impl<
     const B: usize,
     DataTy: Send + Sync + 'static + Clone,
     EntriesTy: Send + Sync + 'static + ShaderEntry + Clone,
-    BuffersTy: Send + Sync + 'static + GroupedBuffers<DataTy, B> + Resource,
+    BuffersTy: Send + Sync + 'static + GroupedBuffers<DataTy, B> + Resource + ExtractResource,
     PipelineTy: Send + Sync + 'static + Pipeline + Resource + FromWorld,
     ShaderTy: Send + Sync + 'static + RenderLabel + Clone + Eq + PartialEq + Hash,
 > Plugin for ShaderPlugin<DataTy, EntriesTy, BuffersTy, PipelineTy, ShaderTy, B>

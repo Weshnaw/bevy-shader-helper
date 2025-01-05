@@ -1,7 +1,7 @@
 use bevy::{
     prelude::*,
     render::{
-        extract_resource::{ExtractResource, ExtractResourcePlugin},
+        extract_resource::ExtractResource,
         render_asset::RenderAssets,
         render_graph::RenderLabel,
         render_resource::{
@@ -101,9 +101,5 @@ impl GroupedBuffers<HelloData, 4> for HelloBuffers {
             )
             .into(),
         });
-    }
-
-    fn create_resource_extractor_plugins(app: &mut App) {
-        app.add_plugins((ExtractResourcePlugin::<Self>::default(),));
     }
 }
