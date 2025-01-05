@@ -1,7 +1,10 @@
 mod internals;
-mod template_filters;
 
-use std::{fs::{self, File}, io::Write, path::PathBuf};
+use std::{
+    fs::{self, File},
+    io::Write,
+    path::PathBuf,
+};
 
 use internals::EntryError;
 use naga::front::wgsl;
@@ -25,9 +28,11 @@ pub fn compile_shader<T: AsRef<str>>(name: T, shader: impl Into<PathBuf>) -> Res
     let file: PathBuf = shader.into();
     let path = file.clone();
     let path = path.as_os_str().to_string_lossy();
-    let rust_file = internals::compile_shader(name, fs::read_to_string(file)?, path)?;
-    
-    let mut file = File::create("temp.rs")?;
+    let mut assets_file = PathBuf::from("assets");
+    assets_file.push(file);
+    let rust_file = internals::compile_shader(name, fs::read_to_string(assets_file)?, path)?;
+
+    let mut file = File::create("../examples/generated_temp.rs")?;
     file.write_all(rust_file.as_bytes())?;
 
     Ok(())
@@ -45,10 +50,10 @@ mod tests {
 
         assert!(res.is_err());
     }
-    
+
     #[test_log::test]
     fn test_shader_example() {
-        let res = compile_shader("hello",  "assets/hello.wgsl");
+        let res = compile_shader("hello", "hello.wgsl");
         debug!(?res);
         assert!(res.is_err());
     }

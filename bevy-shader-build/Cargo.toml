@@ -1,20 +1,16 @@
 [package]
-name = "bevy-compute-build"
+name = "bevy-shader-build"
 version = "0.1.0"
 edition.workspace = true
 
 [dependencies]
-heck = "0.5.0"
-liquid = "0.26.9"
-liquid-core = "0.26.9"
-liquid-derive = "0.26.8"
 naga = { version = "23.1.0", features = ["wgsl-in"] }
-paste = "1.0.15"
-prettyplease = "0.2.25"
-syn = { version = "2.0.94", features = ["full"] }
 thiserror = "2.0.9"
 tracing = "0.1.41"
 wgpu-types = "23.0.0"
+# TODO: make optional with flag format
+prettyplease = "0.2.25"
+syn = { version = "2.0.94", features = ["full"] }
 
 [dev-dependencies]
 test-log = { version = "0.2.16", features = ["trace"] }

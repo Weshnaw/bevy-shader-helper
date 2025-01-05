@@ -1,8 +1,14 @@
 [workspace]
-members = ["bevy-compute-build", "bevy-compute-macros"]
+members = [
+    "bevy-shader-build",
+    "bevy-shader-helper",
+    "bevy-shader-macros",
+    "examples/*"]
 resolver = "2"
 
 [workspace.package]
 edition = "2024"
 
 [workspace.dependencies]
+bevy = "0.15"
+bevy-shader-helper = { path = "bevy-shader-helper" }
