@@ -377,6 +377,7 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "bevy-shader-macros",
+ "tracing",
 ]
 
 [[package]]
@@ -384,6 +385,7 @@ name = "bevy-shader-macros"
 version = "0.1.0"
 dependencies = [
  "bevy-shader-helper",
+ "proc-macro2",
  "quote",
  "syn",
 ]

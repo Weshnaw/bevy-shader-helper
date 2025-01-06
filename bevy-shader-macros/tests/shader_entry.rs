@@ -1,7 +1,7 @@
 use bevy_shader_helper::internals::prelude::ShaderEntry;
 
 #[test]
-fn test_macro() {
+fn test_entry_macro() {
     #[derive(ShaderEntry)]
     enum TestEntry {
         Main,

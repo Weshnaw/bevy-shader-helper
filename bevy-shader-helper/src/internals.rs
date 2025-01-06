@@ -13,4 +13,5 @@ pub mod prelude {
     pub use super::pipeline::ComputePipeline;
     pub use super::plugin::ShaderPlugin;
     pub use crate::ImageBuilder;
+    pub use crate::builders::texture_dimension::*;
 }

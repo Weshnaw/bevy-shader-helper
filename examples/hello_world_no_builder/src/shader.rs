@@ -5,9 +5,7 @@ use bevy::{
         render_asset::RenderAssets,
         render_graph::RenderLabel,
         render_resource::{
-            BindGroupEntries,
-            IntoBinding, ShaderType,
-            TextureDimension, TextureFormat,
+            BindGroupEntries, IntoBinding, ShaderType,
         },
         storage::{GpuShaderStorageBuffer, ShaderStorageBuffer},
         texture::GpuImage,
@@ -36,11 +34,16 @@ pub struct Foo {
 }
 
 #[derive(Clone, ShaderDataDetails)]
+#[entry("main")]
+#[entry("update")]
 pub struct HelloData {
     pub a: Vec<u32>,
+    #[read_only]
     pub b: Foo,
+    #[read_only]
     pub c: Vec3,
-    pub d: ImageBuilder,
+    #[texture(ReadWrite, R32Float, D2)]
+    pub d: ImageBuilder<R32Float, D2>,
 }
 
 // I don't like this but I do not know how to improve it
@@ -60,22 +63,22 @@ impl GroupedBuffers<HelloData, 4> for HelloBuffers {
     ) -> BindGroupEntries<'a, 4> {
         BindGroupEntries::sequential((
             buffers
-                .get(&self.a.data)
+                .get(&self.a.handle)
                 .unwrap()
                 .buffer
                 .as_entire_buffer_binding(),
             buffers
-                .get(&self.b.data)
+                .get(&self.b.handle)
                 .unwrap()
                 .buffer
                 .as_entire_buffer_binding(),
             buffers
-                .get(&self.c.data)
+                .get(&self.c.handle)
                 .unwrap()
                 .buffer
                 .as_entire_buffer_binding(),
             images
-                .get(&self.d.data)
+                .get(&self.d.handle)
                 .unwrap()
                 .texture_view
                 .into_binding(),
@@ -92,14 +95,7 @@ impl GroupedBuffers<HelloData, 4> for HelloBuffers {
             a: create_storage_buffer(buffers, d.a, true).into(),
             b: create_storage_buffer(buffers, d.b, false).into(),
             c: create_storage_buffer(buffers, d.c, false).into(),
-            d: create_texture_buffer(
-                images,
-                d.d,
-                TextureFormat::R32Float,
-                TextureDimension::D2,
-                true,
-            )
-            .into(),
+            d: create_texture_buffer(images, d.d, true).into(),
         });
     }
 }

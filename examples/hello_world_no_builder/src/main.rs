@@ -21,8 +21,8 @@ fn main() {
             }
             .into(),
         })
-        .on_startup([(HelloEntries::Main, (3, 1, 1)).into()])
-        .on_update([(HelloEntries::Update, (3, 1, 1)).into()])
+        .on_startup([(HelloEntries::Main, (1, 1, 1)).into()])
+        .on_update([(HelloEntries::Update, (1, 1, 1)).into()])
         .build();
 
     App::new()

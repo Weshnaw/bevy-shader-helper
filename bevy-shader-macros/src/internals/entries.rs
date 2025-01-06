@@ -3,10 +3,7 @@ use quote::{ToTokens, quote};
 use syn::{DeriveInput, Variant};
 
 pub fn expand(input: TokenStream) -> TokenStream {
-    let ast = syn::parse_macro_input!(input as DeriveInput);
-
-    let name = ast.ident;
-    let data = ast.data;
+    let DeriveInput { ident, data, .. } = syn::parse_macro_input!(input as DeriveInput);
 
     let variants = match data {
         syn::Data::Enum(data_enum) => data_enum.variants.into_iter().enumerate().map(enumify), //.enumerate(),
@@ -15,7 +12,7 @@ pub fn expand(input: TokenStream) -> TokenStream {
     };
 
     let expanded = quote! {
-        impl ShaderEntry for #name {
+        impl ShaderEntry for #ident {
             fn as_key(&self) -> usize {
                 match self {
                     #(Self::#variants),*

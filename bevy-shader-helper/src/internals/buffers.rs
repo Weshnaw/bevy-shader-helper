@@ -1,6 +1,6 @@
 use bevy::{
     app::App,
-    asset::{Asset, Assets, Handle, RenderAssetUsages},
+    asset::{Asset, Assets, Handle},
     image::Image,
     prelude::{Commands, ResMut},
     render::{
@@ -8,15 +8,13 @@ use bevy::{
         gpu_readback::Readback,
         render_asset::RenderAssets,
         render_resource::{
-            BindGroupEntries, BufferUsages, ShaderType, TextureDimension, TextureFormat,
+            BindGroupEntries, BufferUsages, ShaderType,
             TextureUsages, encase::internal::WriteInto,
         },
         storage::{GpuShaderStorageBuffer, ShaderStorageBuffer},
         texture::GpuImage,
     },
 };
-
-use crate::{ImageBuilder, ImageData};
 
 pub trait GroupedBuffers<DataTy: Clone, const B: usize> {
     fn label() -> Option<&'static str> {
@@ -59,34 +57,10 @@ pub fn create_storage_buffer<DataTy: ShaderType + WriteInto>(
 
 pub fn create_texture_buffer(
     images: &mut Assets<Image>,
-    builder: ImageBuilder,
-    format: TextureFormat,
-    dimension: TextureDimension,
+    image: impl Into<Image>,
     writeable: bool,
 ) -> Handle<Image> {
-    let asset_usage = RenderAssetUsages::RENDER_WORLD;
-
-    let mut image = match builder.data {
-        ImageData::Fill(data) => {
-            bevy::image::Image::new_fill(builder.size, dimension, &data, format, asset_usage)
-        }
-        ImageData::Data(vec) => {
-            bevy::image::Image::new(builder.size, dimension, vec, format, asset_usage)
-        }
-        ImageData::Zeros => {
-            let size = builder.size;
-            let total = size.height * size.width * size.depth_or_array_layers;
-            let total = total * format.block_copy_size(None).unwrap_or(0);
-            // debug!("Creating image of {total} size");
-            bevy::image::Image::new(
-                size,
-                dimension,
-                vec![0; total as usize],
-                format,
-                asset_usage,
-            )
-        }
-    };
+    let mut image: Image = image.into();
     image.texture_descriptor.usage |= TextureUsages::STORAGE_BINDING;
     if writeable {
         image.texture_descriptor.usage |= TextureUsages::COPY_SRC;
@@ -100,39 +74,39 @@ pub fn create_texture_buffer(
 // ReadBuffer  -> CPU Writeable meaning we want to potentially be able to modify the buffer,
 //                but we do not care about the readback because we already know it (unless of course it's ReadWrite)
 pub struct WriteBuffer<T: Asset> {
-    pub data: Handle<T>,
+    pub handle: Handle<T>,
 }
 impl<T: Asset> Clone for WriteBuffer<T> {
     fn clone(&self) -> Self {
         Self {
-            data: self.data.clone(),
+            handle: self.handle.clone(),
         }
     }
 }
 impl<T: Asset> From<Handle<T>> for WriteBuffer<T> {
     fn from(data: Handle<T>) -> Self {
-        Self { data }
+        Self { handle: data }
     }
 }
 impl ReadableBuffer for WriteBuffer<ShaderStorageBuffer> {
     fn readback(&self) -> Readback {
-        Readback::Buffer(self.data.clone())
+        Readback::Buffer(self.handle.clone())
     }
 }
 
 pub struct ReadBuffer<T: Asset> {
-    pub data: Handle<T>,
+    pub handle: Handle<T>,
 }
 impl<T: Asset> Clone for ReadBuffer<T> {
     fn clone(&self) -> Self {
         Self {
-            data: self.data.clone(),
+            handle: self.handle.clone(),
         }
     }
 }
 impl<T: Asset> From<Handle<T>> for ReadBuffer<T> {
     fn from(data: Handle<T>) -> Self {
-        Self { data }
+        Self { handle: data }
     }
 }
 impl WriteableBuffer for ReadBuffer<ShaderStorageBuffer> {
@@ -142,34 +116,34 @@ impl WriteableBuffer for ReadBuffer<ShaderStorageBuffer> {
     where
         Self::T: Asset,
     {
-        let _ = self.data;
+        let _ = self.handle;
         todo!()
     }
 }
 
 pub struct ReadWriteBuffer<T: Asset> {
-    pub data: Handle<T>,
+    pub handle: Handle<T>,
 }
 impl<T: Asset> Clone for ReadWriteBuffer<T> {
     fn clone(&self) -> Self {
         Self {
-            data: self.data.clone(),
+            handle: self.handle.clone(),
         }
     }
 }
 impl<T: Asset> From<Handle<T>> for ReadWriteBuffer<T> {
     fn from(data: Handle<T>) -> Self {
-        Self { data }
+        Self { handle: data }
     }
 }
 impl ReadableBuffer for ReadWriteBuffer<ShaderStorageBuffer> {
     fn readback(&self) -> Readback {
-        Readback::Buffer(self.data.clone())
+        Readback::Buffer(self.handle.clone())
     }
 }
 impl ReadableBuffer for ReadWriteBuffer<Image> {
     fn readback(&self) -> Readback {
-        Readback::Texture(self.data.clone())
+        Readback::Texture(self.handle.clone())
     }
 }
 
