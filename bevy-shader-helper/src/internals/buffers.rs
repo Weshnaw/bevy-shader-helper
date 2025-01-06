@@ -1,22 +1,21 @@
-use bevy::{
-    app::App,
-    asset::{Asset, Assets, Handle},
-    image::Image,
-    prelude::{Commands, ResMut},
-    render::{
-        extract_resource::{ExtractResource, ExtractResourcePlugin},
-        gpu_readback::Readback,
-        render_asset::RenderAssets,
-        render_resource::{
-            BindGroupEntries, BufferUsages, ShaderType,
-            TextureUsages, encase::internal::WriteInto,
-        },
-        storage::{GpuShaderStorageBuffer, ShaderStorageBuffer},
-        texture::GpuImage,
+use bevy_app::App;
+use bevy_asset::{Asset, Assets, Handle};
+use bevy_ecs::system::{Commands, ResMut};
+use bevy_image::Image;
+use bevy_render::{
+    extract_resource::{ExtractResource, ExtractResourcePlugin},
+    gpu_readback::Readback,
+    render_asset::RenderAssets,
+    render_resource::{
+        BindGroupEntries, BindingResource, BufferUsages, IntoBinding, ShaderType, TextureUsages,
+        encase::internal::WriteInto,
     },
+    storage::{GpuShaderStorageBuffer, ShaderStorageBuffer},
+    texture::GpuImage,
 };
 
-pub trait GroupedBuffers<DataTy: Clone, const B: usize> {
+pub use bevy_shader_macros::BufferGroup;
+pub trait BufferGroup<DataTy: Clone, const B: usize> {
     fn label() -> Option<&'static str> {
         // TODO: make this the correct return type -> impl wgpu::Label<'a>
         None
@@ -158,4 +157,74 @@ pub trait WriteableBuffer {
     fn get_mut<'a>(&'a self, buffers: &'a mut ResMut<Assets<Self::T>>) -> &'a mut Self::T
     where
         Self::T: Asset;
+}
+
+pub trait HandleIntoBinding {
+    type T;
+    fn into_binding<'a, 'b>(&'a self, assets: &'b Self::T) -> BindingResource<'b>;
+}
+
+// Storage Buffers
+impl HandleIntoBinding for ReadBuffer<ShaderStorageBuffer> {
+    type T = RenderAssets<GpuShaderStorageBuffer>;
+    fn into_binding<'a, 'b>(&'a self, assets: &'b Self::T) -> BindingResource<'b> {
+        assets
+            .get(&self.handle)
+            .expect("Missing GPU Storage Buffer")
+            .buffer
+            .as_entire_binding()
+    }
+}
+impl HandleIntoBinding for WriteBuffer<ShaderStorageBuffer> {
+    type T = RenderAssets<GpuShaderStorageBuffer>;
+    fn into_binding<'a, 'b>(&'a self, assets: &'b Self::T) -> BindingResource<'b> {
+        assets
+            .get(&self.handle)
+            .expect("Missing GPU Storage Buffer")
+            .buffer
+            .as_entire_binding()
+    }
+}
+
+impl HandleIntoBinding for ReadWriteBuffer<ShaderStorageBuffer> {
+    type T = RenderAssets<GpuShaderStorageBuffer>;
+    fn into_binding<'a, 'b>(&'a self, assets: &'b Self::T) -> BindingResource<'b> {
+        assets
+            .get(&self.handle)
+            .expect("Missing GPU Storage Buffer")
+            .buffer
+            .as_entire_binding()
+    }
+}
+// Texture Buffers
+impl HandleIntoBinding for ReadBuffer<Image> {
+    type T = RenderAssets<GpuImage>;
+    fn into_binding<'a, 'b>(&'a self, assets: &'b Self::T) -> BindingResource<'b> {
+        assets
+            .get(&self.handle)
+            .expect("Missing GPU Image")
+            .texture_view
+            .into_binding()
+    }
+}
+impl HandleIntoBinding for WriteBuffer<Image> {
+    type T = RenderAssets<GpuImage>;
+    fn into_binding<'a, 'b>(&'a self, assets: &'b Self::T) -> BindingResource<'b> {
+        assets
+            .get(&self.handle)
+            .expect("Missing GPU Image")
+            .texture_view
+            .into_binding()
+    }
+}
+
+impl HandleIntoBinding for ReadWriteBuffer<Image> {
+    type T = RenderAssets<GpuImage>;
+    fn into_binding<'a, 'b>(&'a self, assets: &'b Self::T) -> BindingResource<'b> {
+        assets
+            .get(&self.handle)
+            .expect("Missing GPU Image")
+            .texture_view
+            .into_binding()
+    }
 }

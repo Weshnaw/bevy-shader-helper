@@ -375,8 +375,13 @@ dependencies = [
 name = "bevy-shader-helper"
 version = "0.1.0"
 dependencies = [
- "bevy",
  "bevy-shader-macros",
+ "bevy_app",
+ "bevy_asset",
+ "bevy_ecs",
+ "bevy_image",
+ "bevy_math",
+ "bevy_render",
  "tracing",
 ]
 

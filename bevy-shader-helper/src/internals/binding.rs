@@ -1,21 +1,19 @@
 use std::{borrow::Cow, marker::PhantomData};
 
-use bevy::{
-    asset::Handle,
-    prelude::{Commands, Res, Resource, Shader},
-    render::{
-        render_asset::RenderAssets,
-        render_resource::{
-            self, BindGroupLayout, BindGroupLayoutEntries, CachedComputePipelineId,
-            ComputePipelineDescriptor, PipelineCache, ShaderStages,
-        },
-        renderer::RenderDevice,
-        storage::GpuShaderStorageBuffer,
-        texture::GpuImage,
+use bevy_asset::Handle;
+use bevy_ecs::system::{Commands, Res, Resource};
+use bevy_render::{
+    render_asset::RenderAssets,
+    render_resource::{
+        self, BindGroupLayout, BindGroupLayoutEntries, CachedComputePipelineId,
+        ComputePipelineDescriptor, PipelineCache, Shader, ShaderStages,
     },
+    renderer::RenderDevice,
+    storage::GpuShaderStorageBuffer,
+    texture::GpuImage,
 };
 
-use super::{buffers::GroupedBuffers, pipeline::Pipeline};
+use super::{buffers::BufferGroup, pipeline::Pipeline};
 
 pub use bevy_shader_macros::ShaderDataDetails;
 pub trait ShaderDataDetails<const B: usize, const E: usize> {
@@ -54,7 +52,7 @@ pub(super) fn prepare_bind_group<
     const B: usize,
     BuffersDataTy: Clone,
     PipelineTy: Resource + Pipeline,
-    BuffersTy: Resource + GroupedBuffers<BuffersDataTy, B>,
+    BuffersTy: Resource + BufferGroup<BuffersDataTy, B>,
 >(
     mut commands: Commands,
     render_device: Res<RenderDevice>,

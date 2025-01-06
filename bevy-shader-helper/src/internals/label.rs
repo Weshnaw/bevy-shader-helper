@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use bevy::render::render_graph::RenderLabel;
+use bevy_render::render_graph::RenderLabel;
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone, RenderLabel)]
 pub(super) struct ShaderLabel<T> {

@@ -25,7 +25,7 @@ pub fn expand(input: TokenStream) -> TokenStream {
     };
     let fields_count = fields.len();
 
-    let handle = quote! { bevy_shader_helper::bevy::asset::Handle };
+    let handle = quote! { bevy_shader_helper::bevy::Handle };
 
     let expanded = quote! {
     impl ShaderDataDetails<#fields_count, #entry_count> for #ident {
@@ -87,7 +87,7 @@ fn expand_field(field: Field, rr: &impl ToTokens) -> impl ToTokens {
         if a.path().is_ident("texture") {
             match a.meta {
                 Meta::List(meta) => Some(FieldAttr::Texture(meta)),
-                _ => unimplemented!("Not enough texture information")
+                _ => unimplemented!("Not enough texture information"),
             }
         } else if a.path().is_ident("read_only") {
             Some(FieldAttr::ReadOnly)
@@ -101,10 +101,14 @@ fn expand_field(field: Field, rr: &impl ToTokens) -> impl ToTokens {
     if let Some(attr) = attr {
         match attr {
             FieldAttr::Texture(attrs) => {
-                let a: Vec<_> = attrs.tokens.into_iter().filter_map(|t| match t {
-                    TokenTree::Ident(ident) => Some(ident),
-                    _ => None
-                }).collect();
+                let a: Vec<_> = attrs
+                    .tokens
+                    .into_iter()
+                    .filter_map(|t| match t {
+                        TokenTree::Ident(ident) => Some(ident),
+                        _ => None,
+                    })
+                    .collect();
                 assert!(a.len() == 3, "Not enough texture information");
                 let access = &a[0];
                 let format = &a[1];

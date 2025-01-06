@@ -1,4 +1,4 @@
-use bevy::render::render_resource::{TextureDimension, TextureFormat};
+use bevy_render::render_resource::{TextureDimension, TextureFormat};
 
 // TODO: macro
 pub trait ToTextureDimension {

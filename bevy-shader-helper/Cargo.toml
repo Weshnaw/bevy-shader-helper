@@ -4,6 +4,11 @@ version = "0.1.0"
 edition.workspace = true
 
 [dependencies]
-bevy = { workspace = true }
+bevy_ecs = "0.15"
+bevy_render = "0.15"
+bevy_asset = "0.15"
+bevy_image = "0.15"
+bevy_app = "0.15"
+bevy_math = "0.15"
 bevy-shader-macros = { workspace = true }
 tracing = "0.1.41"

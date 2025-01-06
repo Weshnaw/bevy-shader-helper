@@ -1,6 +1,6 @@
-use bevy::render::render_resource::{CachedPipelineState, ComputePass, PipelineCache};
-
 use crate::internals::{binding::GenericBindGroup, pipeline::Pipeline};
+
+use bevy_render::render_resource::{CachedPipelineState, ComputePass, PipelineCache};
 
 pub use bevy_shader_macros::ShaderEntry;
 pub trait ShaderEntry {

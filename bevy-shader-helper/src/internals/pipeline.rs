@@ -1,11 +1,13 @@
 use std::marker::PhantomData;
 
-use bevy::{
-    asset::DirectAssetAccessExt,
-    prelude::{FromWorld, Resource},
-    render::render_resource::{
-        BindGroupLayout, CachedComputePipelineId, PipelineCache, ShaderStages,
-    },
+use bevy_asset::DirectAssetAccessExt;
+use bevy_ecs::{
+    system::Resource,
+    world::{FromWorld, World},
+};
+use bevy_render::{
+    render_resource::{BindGroupLayout, CachedComputePipelineId, PipelineCache, ShaderStages},
+    renderer::RenderDevice,
 };
 
 use super::{binding::ShaderDataDetails, entries::ShaderEntry};
@@ -38,8 +40,8 @@ impl<const B: usize, const E: usize, DataTy> Pipeline for ComputePipeline<B, E, 
 impl<const B: usize, const E: usize, DataTy: ShaderDataDetails<B, E>> FromWorld
     for ComputePipeline<B, E, DataTy>
 {
-    fn from_world(world: &mut bevy::prelude::World) -> Self {
-        let render_device = world.resource::<bevy::render::renderer::RenderDevice>();
+    fn from_world(world: &mut World) -> Self {
+        let render_device = world.resource::<RenderDevice>();
         let layout = render_device.create_bind_group_layout(
             DataTy::bind_group_label(),
             &DataTy::buffer_entries(ShaderStages::COMPUTE),

@@ -1,13 +1,11 @@
 use std::marker::PhantomData;
 
-use bevy::{
-    asset::RenderAssetUsages,
-    image::Image,
-    render::render_resource::{Extent3d, TextureDimension, TextureFormat},
-};
-use crate::texture_details::{ToTextureDimension, ToTextureFormat};
+use bevy_asset::RenderAssetUsages;
+use bevy_image::Image;
+use bevy_render::render_resource::{Extent3d, TextureDimension, TextureFormat};
 
 use crate::internals::entries::{Dispatch, Entry};
+use crate::texture_details::{ToTextureDimension, ToTextureFormat};
 
 #[derive(Clone, Default)]
 pub enum ImageData {
@@ -21,18 +19,14 @@ impl ImageData {
     fn to_image(self, size: Extent3d, format: TextureFormat, dimension: TextureDimension) -> Image {
         let asset_usage = RenderAssetUsages::RENDER_WORLD;
         match self {
-            ImageData::Fill(data) => {
-                bevy::image::Image::new_fill(size, dimension, &data, format, asset_usage)
-            }
-            ImageData::Data(vec) => {
-                bevy::image::Image::new(size, dimension, vec, format, asset_usage)
-            }
+            ImageData::Fill(data) => Image::new_fill(size, dimension, &data, format, asset_usage),
+            ImageData::Data(vec) => Image::new(size, dimension, vec, format, asset_usage),
             ImageData::Zeros => {
                 let size = size;
                 let total = size.height * size.width * size.depth_or_array_layers;
                 let total = total * format.block_copy_size(None).unwrap_or(0);
                 // debug!("Creating image of {total} size");
-                bevy::image::Image::new(
+                Image::new(
                     size,
                     dimension,
                     vec![0; total as usize],
