@@ -1,5 +1,5 @@
 use bevy_shader_helper::{
-    bevy::render::render_resource, internals::prelude::ShaderDataDetails, texture_dimension::{R32Float, D2}, ImageBuilder
+    bevy::render::render_resource, internals::prelude::ShaderDataDetails, texture_details::{R32Float, D2}, ImageBuilder
 };
 
 #[test]

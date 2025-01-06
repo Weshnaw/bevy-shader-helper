@@ -3,10 +3,7 @@ use bevy::{
     render::{
         extract_resource::ExtractResource,
         render_asset::RenderAssets,
-        render_graph::RenderLabel,
-        render_resource::{
-            BindGroupEntries, IntoBinding, ShaderType,
-        },
+        render_resource::{BindGroupEntries, IntoBinding, ShaderType},
         storage::{GpuShaderStorageBuffer, ShaderStorageBuffer},
         texture::GpuImage,
     },
@@ -14,26 +11,21 @@ use bevy::{
 
 use bevy_shader_helper::internals::prelude::*;
 
-pub type HelloShaderPlugin =
-    ShaderPlugin<HelloData, HelloEntries, HelloBuffers, HelloComputePipeline, HelloShader, 4>;
-pub type HelloComputePipeline = ComputePipeline<4, 2, HelloData>;
+pub type HelloShaderPlugin = ShaderPlugin<HelloData, HelloEntries, HelloBuffers, 4, 2>;
 
-#[derive(Debug, Hash, PartialEq, Eq, Clone, RenderLabel)]
-pub struct HelloShader;
-
-#[derive(Debug, PartialEq, Eq, Hash, Clone, ShaderEntry)]
+#[derive(ShaderEntry, Debug, PartialEq, Eq, Hash, Clone)]
 pub enum HelloEntries {
     Main,
     Update,
 }
 
-#[derive(Clone, ShaderType)]
+#[derive(ShaderType, Clone)]
 pub struct Foo {
     pub bar: u32,
     pub bazz: f32,
 }
 
-#[derive(Clone, ShaderDataDetails)]
+#[derive(ShaderDataDetails, Clone)]
 #[entry("main")]
 #[entry("update")]
 pub struct HelloData {
@@ -46,7 +38,6 @@ pub struct HelloData {
     pub d: ImageBuilder<R32Float, D2>,
 }
 
-// I don't like this but I do not know how to improve it
 #[derive(Resource, ExtractResource, Clone)]
 pub struct HelloBuffers {
     pub a: ReadWriteBuffer<ShaderStorageBuffer>,

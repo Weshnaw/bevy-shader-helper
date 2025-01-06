@@ -1,5 +1,6 @@
 pub mod builders;
 pub mod internals;
+pub mod texture_details;
 
 pub use crate::builders::*;
 

@@ -5,7 +5,7 @@ use bevy::{
     image::Image,
     render::render_resource::{Extent3d, TextureDimension, TextureFormat},
 };
-use texture_dimension::{ToTextureDimension, ToTextureFormat};
+use crate::texture_details::{ToTextureDimension, ToTextureFormat};
 
 use crate::internals::entries::{Dispatch, Entry};
 
@@ -58,37 +58,6 @@ impl<F, D> Clone for ImageBuilder<F, D> {
             data: self.data.clone(),
             _phantom_dimension: self._phantom_dimension.clone(),
             _phantom_format: self._phantom_format.clone(),
-        }
-    }
-}
-
-pub mod texture_dimension {
-    use bevy::render::render_resource::{TextureDimension, TextureFormat};
-
-    // TODO: macro
-    pub trait ToTextureDimension {
-        fn texture_dimension() -> TextureDimension;
-    }
-
-    pub struct D1;
-    pub struct D2;
-    impl ToTextureDimension for D2 {
-        fn texture_dimension() -> TextureDimension {
-            TextureDimension::D2
-        }
-    }
-    pub struct D3;
-
-    // TODO macro
-    pub trait ToTextureFormat {
-        fn texture_format() -> TextureFormat;
-    }
-
-    pub struct R32Float;
-
-    impl ToTextureFormat for R32Float {
-        fn texture_format() -> TextureFormat {
-            TextureFormat::R32Float
         }
     }
 }
