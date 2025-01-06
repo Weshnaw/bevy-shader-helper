@@ -161,13 +161,13 @@ pub trait WriteableBuffer {
 
 pub trait HandleIntoBinding {
     type T;
-    fn into_binding<'a, 'b>(&'a self, assets: &'b Self::T) -> BindingResource<'b>;
+    fn binding<'b>(&self, assets: &'b Self::T) -> BindingResource<'b>;
 }
 
 // Storage Buffers
 impl HandleIntoBinding for ReadBuffer<ShaderStorageBuffer> {
     type T = RenderAssets<GpuShaderStorageBuffer>;
-    fn into_binding<'a, 'b>(&'a self, assets: &'b Self::T) -> BindingResource<'b> {
+    fn binding<'b>(&self, assets: &'b Self::T) -> BindingResource<'b> {
         assets
             .get(&self.handle)
             .expect("Missing GPU Storage Buffer")
@@ -177,7 +177,7 @@ impl HandleIntoBinding for ReadBuffer<ShaderStorageBuffer> {
 }
 impl HandleIntoBinding for WriteBuffer<ShaderStorageBuffer> {
     type T = RenderAssets<GpuShaderStorageBuffer>;
-    fn into_binding<'a, 'b>(&'a self, assets: &'b Self::T) -> BindingResource<'b> {
+    fn binding<'b>(&self, assets: &'b Self::T) -> BindingResource<'b> {
         assets
             .get(&self.handle)
             .expect("Missing GPU Storage Buffer")
@@ -188,7 +188,7 @@ impl HandleIntoBinding for WriteBuffer<ShaderStorageBuffer> {
 
 impl HandleIntoBinding for ReadWriteBuffer<ShaderStorageBuffer> {
     type T = RenderAssets<GpuShaderStorageBuffer>;
-    fn into_binding<'a, 'b>(&'a self, assets: &'b Self::T) -> BindingResource<'b> {
+    fn binding<'b>(&self, assets: &'b Self::T) -> BindingResource<'b> {
         assets
             .get(&self.handle)
             .expect("Missing GPU Storage Buffer")
@@ -199,7 +199,7 @@ impl HandleIntoBinding for ReadWriteBuffer<ShaderStorageBuffer> {
 // Texture Buffers
 impl HandleIntoBinding for ReadBuffer<Image> {
     type T = RenderAssets<GpuImage>;
-    fn into_binding<'a, 'b>(&'a self, assets: &'b Self::T) -> BindingResource<'b> {
+    fn binding<'b>(&self, assets: &'b Self::T) -> BindingResource<'b> {
         assets
             .get(&self.handle)
             .expect("Missing GPU Image")
@@ -209,7 +209,7 @@ impl HandleIntoBinding for ReadBuffer<Image> {
 }
 impl HandleIntoBinding for WriteBuffer<Image> {
     type T = RenderAssets<GpuImage>;
-    fn into_binding<'a, 'b>(&'a self, assets: &'b Self::T) -> BindingResource<'b> {
+    fn binding<'b>(&self, assets: &'b Self::T) -> BindingResource<'b> {
         assets
             .get(&self.handle)
             .expect("Missing GPU Image")
@@ -220,7 +220,7 @@ impl HandleIntoBinding for WriteBuffer<Image> {
 
 impl HandleIntoBinding for ReadWriteBuffer<Image> {
     type T = RenderAssets<GpuImage>;
-    fn into_binding<'a, 'b>(&'a self, assets: &'b Self::T) -> BindingResource<'b> {
+    fn binding<'b>(&self, assets: &'b Self::T) -> BindingResource<'b> {
         assets
             .get(&self.handle)
             .expect("Missing GPU Image")

@@ -11,8 +11,7 @@ pub fn expand(input: TokenStream) -> TokenStream {
         .into_iter()
         .find(|a| {
             a.meta
-                .require_list()
-                .map_or(false, |a| a.path.is_ident("data"))
+                .require_list().is_ok_and(|a| a.path.is_ident("data"))
         })
         .expect("Buffer Groups must reference a buffer data type")
         .meta
@@ -80,8 +79,7 @@ pub fn expand(input: TokenStream) -> TokenStream {
 fn expand_entries(field: Field, buffers: &impl ToTokens, count: usize) -> impl ToTokens {
     let texture = field.attrs.iter().any(|a| {
         a.meta
-            .require_path_only()
-            .map_or(false, |t| t.is_ident("texture"))
+            .require_path_only().is_ok_and(|t| t.is_ident("texture"))
     });
     let ident = ident_to_member(field, count);
     let buffer = if texture {
@@ -90,19 +88,17 @@ fn expand_entries(field: Field, buffers: &impl ToTokens, count: usize) -> impl T
         quote! {buffers}
     };
 
-    quote! {#buffers::HandleIntoBinding::into_binding(&self.#ident, #buffer)}
+    quote! {#buffers::HandleIntoBinding::binding(&self.#ident, #buffer)}
 }
 
 fn expand_resources(field: Field, buffers: &impl ToTokens, count: usize) -> impl ToTokens {
     let texture = field.attrs.iter().any(|a| {
         a.meta
-            .require_path_only()
-            .map_or(false, |t| t.is_ident("texture"))
+            .require_path_only().is_ok_and(|t| t.is_ident("texture"))
     });
     let writeable = field.attrs.iter().any(|a| {
         a.meta
-            .require_path_only()
-            .map_or(false, |t| t.is_ident("writeable"))
+            .require_path_only().is_ok_and(|t| t.is_ident("writeable"))
     });
     let ident = ident_to_member(field, count);
 

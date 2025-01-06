@@ -16,13 +16,12 @@ pub enum ImageData {
 }
 
 impl ImageData {
-    fn to_image(self, size: Extent3d, format: TextureFormat, dimension: TextureDimension) -> Image {
+    fn image(self, size: Extent3d, format: TextureFormat, dimension: TextureDimension) -> Image {
         let asset_usage = RenderAssetUsages::RENDER_WORLD;
         match self {
             ImageData::Fill(data) => Image::new_fill(size, dimension, &data, format, asset_usage),
             ImageData::Data(vec) => Image::new(size, dimension, vec, format, asset_usage),
             ImageData::Zeros => {
-                let size = size;
                 let total = size.height * size.width * size.depth_or_array_layers;
                 let total = total * format.block_copy_size(None).unwrap_or(0);
                 // debug!("Creating image of {total} size");
@@ -48,19 +47,19 @@ pub struct ImageBuilder<F, D> {
 impl<F, D> Clone for ImageBuilder<F, D> {
     fn clone(&self) -> Self {
         Self {
-            size: self.size.clone(),
+            size: self.size,
             data: self.data.clone(),
-            _phantom_dimension: self._phantom_dimension.clone(),
-            _phantom_format: self._phantom_format.clone(),
+            _phantom_dimension: self._phantom_dimension,
+            _phantom_format: self._phantom_format,
         }
     }
 }
 
-impl<F: ToTextureFormat, D: ToTextureDimension> Into<Image> for ImageBuilder<F, D> {
-    fn into(self) -> Image {
+impl<F: ToTextureFormat, D: ToTextureDimension> From<ImageBuilder<F, D>> for Image {
+    fn from(val: ImageBuilder<F, D>) -> Self {
         let dimension = D::texture_dimension();
         let format = F::texture_format();
-        self.data.to_image(self.size, format, dimension)
+        val.data.image(val.size, format, dimension)
     }
 }
 
