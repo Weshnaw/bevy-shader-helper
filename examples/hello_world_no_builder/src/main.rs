@@ -21,13 +21,13 @@ fn main() {
             }
             .into(),
         })
-        .on_startup([(HelloEntries::Main, (1, 1, 1)).into()])
-        .on_update([(HelloEntries::Update, (1, 1, 1)).into()])
+        .on_startup([(HelloEntries::Main, (3, 1, 1)).into()])
+        .on_update([(HelloEntries::Update, (2, 1, 1)).into()])
         .build();
 
     App::new()
         .add_plugins((DefaultPlugins, shader))
-        .add_systems(PostStartup, setup_readers)
+        .add_systems(Startup, setup_readers)
         .run();
 }
 
