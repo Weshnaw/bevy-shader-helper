@@ -8,7 +8,6 @@ pub mod plugin;
 
 pub mod prelude {
     pub use super::buffers::*;
-    pub use super::entries::ShaderEntry;
     pub use super::plugin::ShaderPlugin;
     pub use crate::ImageBuilder;
     pub use crate::texture_details::*;

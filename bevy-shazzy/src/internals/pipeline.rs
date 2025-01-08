@@ -10,14 +10,14 @@ use bevy_render::{
     renderer::RenderDevice,
 };
 
-use super::{buffers::BufferGroup, entries::ShaderEntry};
+use super::buffers::BufferGroup;
 
 pub trait Pipeline {
     fn label() -> Option<&'static str> {
         None
     }
     fn layout(&self) -> &BindGroupLayout;
-    fn get_id<EntryTy: ShaderEntry>(&self, entry: &EntryTy) -> CachedComputePipelineId;
+    fn get_id(&self, entry: usize) -> CachedComputePipelineId;
 }
 
 #[derive(Resource)]
@@ -32,8 +32,9 @@ impl<const B: usize, const E: usize, BuffersTy> Pipeline for ComputePipeline<B, 
         &self.layout
     }
 
-    fn get_id<EntryTy: ShaderEntry>(&self, entry: &EntryTy) -> CachedComputePipelineId {
-        self.entries[entry.as_key()]
+    fn get_id(&self, entry: usize) -> CachedComputePipelineId {
+        assert!(entry < E, "Invalid shader entry id, shader only has {} entries", E);
+        self.entries[entry]
     }
 }
 

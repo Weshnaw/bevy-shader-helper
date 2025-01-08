@@ -9,7 +9,7 @@ use bevy_render::{
 
 use super::{
     binding::GenericBindGroup,
-    entries::{Dispatch, ShaderEntry},
+    entries::Dispatch,
     pipeline::Pipeline,
 };
 
@@ -21,14 +21,14 @@ pub(super) enum ShaderStage {
     Update, // TODO: somehow allow for end user to do fancy state things such as the gol example of buffer swapping
 }
 
-pub(super) struct ComputeNode<PipelineTy, EntryTy> {
+pub(super) struct ComputeNode<PipelineTy> {
     state: ShaderStage,
-    dispatches: Dispatch<EntryTy>,
+    dispatches: Dispatch,
     _phantom: PhantomData<PipelineTy>,
 }
 
-impl<PipelineTy, EntryTy> ComputeNode<PipelineTy, EntryTy> {
-    pub(super) fn new(dispatches: Dispatch<EntryTy>) -> Self {
+impl<PipelineTy> ComputeNode<PipelineTy> {
+    pub(super) fn new(dispatches: Dispatch) -> Self {
         Self {
             state: ShaderStage::Loading,
             dispatches,
@@ -37,9 +37,7 @@ impl<PipelineTy, EntryTy> ComputeNode<PipelineTy, EntryTy> {
     }
 }
 
-impl<PipelineTy: Resource + Pipeline, EntryTy: ShaderEntry + Send + Sync + 'static>
-    render_graph::Node for ComputeNode<PipelineTy, EntryTy>
-{
+impl<PipelineTy: Resource + Pipeline> render_graph::Node for ComputeNode<PipelineTy> {
     fn update(&mut self, world: &mut World) {
         let pipeline_cache = world.resource::<PipelineCache>();
         let pipeline = world.resource::<PipelineTy>();

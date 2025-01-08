@@ -1,4 +1,4 @@
-use std::{fmt, hash::Hash, marker::PhantomData, sync::Arc};
+use std::{marker::PhantomData, sync::Arc};
 
 use bevy_app::{App, Plugin, PreStartup};
 use bevy_ecs::{
@@ -16,23 +16,22 @@ use super::{
     binding::{GenericBindGroup, prepare_bind_group},
     buffers::BufferGroup,
     compute::ComputeNode,
-    entries::{Dispatch, ShaderEntry},
+    entries::Dispatch,
     label::ShaderLabel,
     pipeline::ComputePipeline,
 };
 
-pub struct ShaderPlugin<EntriesTy, BuffersTy: BufferGroup<B, E>, const B: usize, const E: usize> {
+pub struct ShaderPlugin<BuffersTy: BufferGroup<B, E>, const B: usize, const E: usize> {
     initial_data: Arc<BuffersTy::Initializer>,
-    entry_dispatches: Dispatch<EntriesTy>,
+    entry_dispatches: Dispatch,
     _buffers_phantom: PhantomData<BuffersTy>,
 }
 
 impl<
     const B: usize,
     const E: usize,
-    EntriesTy: Send + Sync + 'static + ShaderEntry + Clone + Eq + Hash + fmt::Debug,
     BuffersTy: Send + Sync + 'static + BufferGroup<B, E> + Resource + ExtractResource,
-> Plugin for ShaderPlugin<EntriesTy, BuffersTy, B, E>
+> Plugin for ShaderPlugin<BuffersTy, B, E>
 {
     fn build(&self, app: &mut App) {
         BuffersTy::create_resource_extractor_plugins(app);
@@ -60,20 +59,18 @@ impl<
             .world_mut()
             .resource_mut::<RenderGraph>()
             .add_node(
-                ShaderLabel::<EntriesTy>::new(),
-                ComputeNode::<ComputePipeline<B, E, BuffersTy>, EntriesTy>::new(
-                    self.entry_dispatches.clone(),
-                ),
+                ShaderLabel::<BuffersTy>::new(),
+                ComputeNode::<ComputePipeline<B, E, BuffersTy>>::new(self.entry_dispatches.clone()),
             );
     }
 }
 
-impl<const B: usize, const E: usize, EntriesTy, BuffersTy: BufferGroup<B, E>>
-    BuildableShader<EntriesTy, BuffersTy, B, E> for ShaderPlugin<EntriesTy, BuffersTy, B, E>
+impl<const B: usize, const E: usize, BuffersTy: BufferGroup<B, E>> BuildableShader<BuffersTy, B, E>
+    for ShaderPlugin<BuffersTy, B, E>
 where
     BuffersTy::Initializer: Default,
 {
-    fn from_builder(builder: ShaderBuilder<Self, EntriesTy, BuffersTy, B, E>) -> Self {
+    fn from_builder(builder: ShaderBuilder<Self, BuffersTy, B, E>) -> Self {
         let initial_data = builder.initial_data.unwrap_or_default();
 
         let entry_dispatches = builder.dispatches.unwrap_or_default();

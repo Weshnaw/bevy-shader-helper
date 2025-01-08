@@ -23,8 +23,8 @@ fn main() {
 
     let shader = HelloShaderPlugin::builder()
         .initial_data(data)
-        .on_startup([(HelloEntries::Main, (3, 1, 1)).into()])
-        .on_update([(HelloEntries::Update, (2, 1, 1)).into()])
+        .on_startup([(HelloEntries::Main as usize, (3, 1, 1)).into()])
+        .on_update([(HelloEntries::Update as usize, (2, 1, 1)).into()])
         .build();
 
     App::new()

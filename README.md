@@ -20,6 +20,8 @@ Inspired from [prost-build](https://github.com/tokio-rs/prost), and [bevy_easy_c
 - [ ] github actions...
 - [ ] better logging...
 - [ ] improve macros by restricting fields 
+- [ ] can I implement build such that it avoids using the derive macros?
+  
 
 ## TODOs Long Term
 - [ ] Allow for more dynamic shaders (i.e. Bevy's GOL example where they swap the image buffers)
@@ -28,7 +30,9 @@ Inspired from [prost-build](https://github.com/tokio-rs/prost), and [bevy_easy_c
 - [ ] Have someone who knows macros better refactor some of the less then optimal code
 - [ ] More rigorous unit testing
 - [ ] Better compiler errors
+    - [ ] Maybe somehow have use functions from the macro tools 
 
 ## Unknown Feasibility
 - [ ] Somehow combine ShaderBuffers and ShaderData
 - [ ] More elagant solution to the texture_details; ideally one that would also de-dube the ShaderDataDetails::texture attribute fields
+- [ ] Can I add compiler checks for entry enum; without requiring to pass the type down the plugin stack

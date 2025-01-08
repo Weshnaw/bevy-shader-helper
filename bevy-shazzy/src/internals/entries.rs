@@ -2,27 +2,21 @@ use crate::internals::{binding::GenericBindGroup, pipeline::Pipeline};
 
 use bevy_render::render_resource::{CachedPipelineState, ComputePass, PipelineCache};
 
-#[cfg(feature = "derive")]
-pub use bevy_shazzy_macros::ShaderEntry;
-pub trait ShaderEntry {
-    fn as_key(&self) -> usize;
-}
-
 #[derive(Clone, Debug)]
-pub struct Entry<EntryTy> {
-    pub entry: EntryTy,
+pub struct Entry {
+    pub entry: usize,
     pub workgroup: (u32, u32, u32),
 }
-impl<T> From<(T, u32, u32, u32)> for Entry<T> {
-    fn from(value: (T, u32, u32, u32)) -> Self {
+impl From<(usize, u32, u32, u32)> for Entry {
+    fn from(value: (usize, u32, u32, u32)) -> Self {
         Self {
             entry: value.0,
             workgroup: (value.1, value.2, value.3),
         }
     }
 }
-impl<T, V: Into<(u32, u32, u32)>> From<(T, V)> for Entry<T> {
-    fn from(value: (T, V)) -> Self {
+impl<V: Into<(u32, u32, u32)>> From<(usize, V)> for Entry {
+    fn from(value: (usize, V)) -> Self {
         Self {
             entry: value.0,
             workgroup: value.1.into(),
@@ -32,13 +26,13 @@ impl<T, V: Into<(u32, u32, u32)>> From<(T, V)> for Entry<T> {
 
 // TODO impl From (T, 1, 2, 3) / (T, (1, 2, 3))
 
-impl<EntryTy: ShaderEntry> Entry<EntryTy> {
+impl Entry {
     fn get_state<'a, PipelineTy: Pipeline>(
         &'a self,
         pipeline_cache: &'a PipelineCache,
         pipeline: &'a PipelineTy,
     ) -> &'a CachedPipelineState {
-        pipeline_cache.get_compute_pipeline_state(pipeline.get_id(&self.entry))
+        pipeline_cache.get_compute_pipeline_state(pipeline.get_id(self.entry as usize))
     }
 
     fn dispatch<PipelineTy: Pipeline>(
@@ -48,7 +42,7 @@ impl<EntryTy: ShaderEntry> Entry<EntryTy> {
         pass: &mut ComputePass,
         bind_group: &GenericBindGroup<PipelineTy>,
     ) {
-        if let Some(pipeline) = pipeline_cache.get_compute_pipeline(pipeline.get_id(&self.entry)) {
+        if let Some(pipeline) = pipeline_cache.get_compute_pipeline(pipeline.get_id(self.entry)) {
             pass.set_bind_group(0, &bind_group.0, &[]);
             pass.set_pipeline(pipeline);
             pass.dispatch_workgroups(self.workgroup.0, self.workgroup.1, self.workgroup.2);
@@ -57,13 +51,13 @@ impl<EntryTy: ShaderEntry> Entry<EntryTy> {
 }
 
 #[derive(Clone)]
-pub(crate) struct Dispatch<EntryTy> {
-    pub on_startup: Vec<Entry<EntryTy>>,
-    pub on_update: Vec<Entry<EntryTy>>,
+pub(crate) struct Dispatch {
+    pub on_startup: Vec<Entry>,
+    pub on_update: Vec<Entry>,
     // TODO: on_request: Vec<(receiver, ShaderDispatch)>
 }
 
-impl<EntryTy> Default for Dispatch<EntryTy> {
+impl Default for Dispatch {
     fn default() -> Self {
         Self {
             on_startup: vec![],
@@ -72,7 +66,7 @@ impl<EntryTy> Default for Dispatch<EntryTy> {
     }
 }
 
-impl<T, E1: Into<Vec<Entry<T>>>, E2: Into<Vec<Entry<T>>>> From<(E1, E2)> for Dispatch<T> {
+impl<E1: Into<Vec<Entry>>, E2: Into<Vec<Entry>>> From<(E1, E2)> for Dispatch {
     fn from(value: (E1, E2)) -> Self {
         Self {
             on_startup: value.0.into(),
@@ -82,7 +76,7 @@ impl<T, E1: Into<Vec<Entry<T>>>, E2: Into<Vec<Entry<T>>>> From<(E1, E2)> for Dis
 }
 
 // TODO: consider refactoring so that you pass in a enum to specify if on_update or on_startup
-impl<EntryTy: ShaderEntry> Dispatch<EntryTy> {
+impl Dispatch {
     pub(super) fn on_startup_success<PipelineTy: Pipeline>(
         &self,
         pipeline_cache: &PipelineCache,
@@ -107,7 +101,7 @@ impl<EntryTy: ShaderEntry> Dispatch<EntryTy> {
     ) -> bool {
         self.on_startup
             .iter()
-            .map(|entry| pipeline_cache.get_compute_pipeline_state(pipeline.get_id(&entry.entry)))
+            .map(|entry| pipeline_cache.get_compute_pipeline_state(pipeline.get_id(entry.entry)))
             .all(|state| matches!(state, CachedPipelineState::Ok(_)))
     }
 

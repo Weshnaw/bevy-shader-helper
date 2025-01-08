@@ -92,23 +92,21 @@ impl<F, D> From<Extent3d> for ImageBuilder<F, D> {
 
 pub struct ShaderBuilder<
     PluginTy: ?Sized,
-    EntriesTy,
     BuffersTy: BufferGroup<B, E>,
     const B: usize,
     const E: usize,
 > {
     pub(crate) initial_data: Option<BuffersTy::Initializer>,
-    pub(crate) dispatches: Option<Dispatch<EntriesTy>>,
+    pub(crate) dispatches: Option<Dispatch>,
     _phantom: PhantomData<PluginTy>,
 }
 
 impl<
-    EntriesTy,
-    PluginTy: BuildableShader<EntriesTy, BuffersTy, B, E>,
+    PluginTy: BuildableShader<BuffersTy, B, E>,
     BuffersTy: BufferGroup<B, E>,
     const B: usize,
     const E: usize,
-> Default for ShaderBuilder<PluginTy, EntriesTy, BuffersTy, B, E>
+> Default for ShaderBuilder<PluginTy, BuffersTy, B, E>
 {
     fn default() -> Self {
         Self {
@@ -120,12 +118,11 @@ impl<
 }
 
 impl<
-    EntriesTy,
-    PluginTy: BuildableShader<EntriesTy, BuffersTy, B, E>,
+    PluginTy: BuildableShader<BuffersTy, B, E>,
     BuffersTy: BufferGroup<B, E>,
     const B: usize,
     const E: usize,
-> ShaderBuilder<PluginTy, EntriesTy, BuffersTy, B, E>
+> ShaderBuilder<PluginTy, BuffersTy, B, E>
 {
     pub fn initial_data(mut self, data: BuffersTy::Initializer) -> Self {
         self.initial_data = Some(data);
@@ -133,7 +130,7 @@ impl<
         self
     }
 
-    pub fn on_startup<Entries: Into<Vec<Entry<EntriesTy>>>>(mut self, entries: Entries) -> Self {
+    pub fn on_startup<Entries: Into<Vec<Entry>>>(mut self, entries: Entries) -> Self {
         let dispatch = match self.dispatches {
             Some(mut dispatch) => {
                 dispatch.on_startup = entries.into();
@@ -149,7 +146,7 @@ impl<
 
         self
     }
-    pub fn on_update<Entries: Into<Vec<Entry<EntriesTy>>>>(mut self, entries: Entries) -> Self {
+    pub fn on_update<Entries: Into<Vec<Entry>>>(mut self, entries: Entries) -> Self {
         let dispatch = match self.dispatches {
             Some(mut dispatch) => {
                 dispatch.on_update = entries.into();
@@ -171,9 +168,9 @@ impl<
     }
 }
 
-pub trait BuildableShader<DataTy, BuffersTy: BufferGroup<B, E>, const B: usize, const E: usize> {
-    fn from_builder(builder: ShaderBuilder<Self, DataTy, BuffersTy, B, E>) -> Self;
-    fn builder() -> ShaderBuilder<Self, DataTy, BuffersTy, B, E>
+pub trait BuildableShader<BuffersTy: BufferGroup<B, E>, const B: usize, const E: usize> {
+    fn from_builder(builder: ShaderBuilder<Self, BuffersTy, B, E>) -> Self;
+    fn builder() -> ShaderBuilder<Self, BuffersTy, B, E>
     where
         Self: Sized,
     {
