@@ -1,5 +1,5 @@
 [package]
-name = "hello_world_no_derive"
+name = "no_derive"
 version = "0.1.0"
 edition.workspace = true
 

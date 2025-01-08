@@ -1,5 +1,5 @@
 [package]
-name = "hello_world_no_builder"
+name = "no_builder"
 version = "0.1.0"
 edition.workspace = true
 

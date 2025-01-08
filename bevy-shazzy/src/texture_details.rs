@@ -1,7 +1,7 @@
 use bevy_render::render_resource::{TextureDimension, TextureFormat};
 
-// TODO: macro
-pub trait ToTextureDimension {
+// TODO: implement8
+pub(crate) trait ToTextureDimension {
     fn texture_dimension() -> TextureDimension;
 }
 
@@ -14,8 +14,8 @@ impl ToTextureDimension for D2 {
 }
 pub struct D3;
 
-// TODO macro
-pub trait ToTextureFormat {
+// TODO implement
+pub(crate) trait ToTextureFormat {
     fn texture_format() -> TextureFormat;
 }
 

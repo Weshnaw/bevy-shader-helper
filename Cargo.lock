@@ -2389,22 +2389,6 @@ name = "hello_world"
 version = "0.1.0"
 
 [[package]]
-name = "hello_world_no_builder"
-version = "0.1.0"
-dependencies = [
- "bevy",
- "bevy-shazzy",
-]
-
-[[package]]
-name = "hello_world_no_derive"
-version = "0.1.0"
-dependencies = [
- "bevy",
- "bevy-shazzy",
-]
-
-[[package]]
 name = "hermit-abi"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2848,6 +2832,22 @@ dependencies = [
  "cfg-if",
  "cfg_aliases 0.2.1",
  "libc",
+]
+
+[[package]]
+name = "no_builder"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "bevy-shazzy",
+]
+
+[[package]]
+name = "no_derive"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "bevy-shazzy",
 ]
 
 [[package]]
