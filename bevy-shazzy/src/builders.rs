@@ -51,7 +51,12 @@ pub struct ImageBuilder<F, D> {
 
 impl<F, D> Default for ImageBuilder<F, D> {
     fn default() -> Self {
-        Self { size: Default::default(), data: Default::default(), _phantom_dimension: Default::default(), _phantom_format: Default::default() }
+        Self {
+            size: Default::default(),
+            data: Default::default(),
+            _phantom_dimension: Default::default(),
+            _phantom_format: Default::default(),
+        }
     }
 }
 

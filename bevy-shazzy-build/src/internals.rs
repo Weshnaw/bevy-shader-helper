@@ -1,7 +1,7 @@
 #![allow(unused_variables, dead_code)]
 use naga::{
-    Arena, EntryPoint, GlobalVariable, Handle, ImageClass, ImageDimension, Scalar,
-    StructMember, Type, TypeInner, UniqueArena, front::wgsl,
+    Arena, EntryPoint, GlobalVariable, Handle, ImageClass, ImageDimension, Scalar, StructMember,
+    Type, TypeInner, UniqueArena, front::wgsl,
 };
 use thiserror::Error;
 use tracing::{debug, info};
@@ -30,9 +30,7 @@ pub enum EntryError {
 // TODO: better error return, i'm just being lazy
 // TODO: return a bitflag result to allow for multiple shader stages to be acknowledged
 fn handle_entries(entries: &[EntryPoint]) -> crate::Result<ShaderStages> {
-    let _ = entries
-        .iter()
-        .map(|entry| (&entry.name, entry.stage));
+    let _ = entries.iter().map(|entry| (&entry.name, entry.stage));
 
     todo!()
 }
@@ -61,7 +59,11 @@ fn array_type(base: &Handle<Type>, types: &UniqueArena<Type>) -> u32 {
 fn struct_type(members: &[StructMember], _types: &UniqueArena<Type>, span: &u32) -> u32 {
     let members: Vec<_> = members
         .iter()
-        .map(|mem| _types.get_handle(mem.ty).expect("Failed to get shader struct member types"))
+        .map(|mem| {
+            _types
+                .get_handle(mem.ty)
+                .expect("Failed to get shader struct member types")
+        })
         .collect();
     info!(?members, ?span);
 

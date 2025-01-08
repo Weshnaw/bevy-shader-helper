@@ -69,7 +69,7 @@ pub trait BufferGroup<const B: usize, const E: usize> {
 
         f.into_configs()
     }
-    
+
     fn get_bindings<'a>(
         &'a self,
         buffers: &'a RenderAssets<GpuShaderStorageBuffer>,

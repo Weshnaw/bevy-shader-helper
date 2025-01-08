@@ -57,4 +57,3 @@ impl<const B: usize, const E: usize, BuffersTy: BufferGroup<B, E>> FromWorld
         }
     }
 }
-

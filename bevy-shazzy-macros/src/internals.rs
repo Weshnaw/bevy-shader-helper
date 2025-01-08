@@ -1,2 +1,2 @@
-pub mod entries;
 pub mod buffers;
+pub mod entries;

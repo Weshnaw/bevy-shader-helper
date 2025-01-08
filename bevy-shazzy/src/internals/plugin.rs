@@ -74,7 +74,7 @@ where
     BuffersTy::Initializer: Default,
 {
     fn from_builder(builder: ShaderBuilder<Self, EntriesTy, BuffersTy, B, E>) -> Self {
-        let initial_data = builder.initial_data.unwrap_or_default(); 
+        let initial_data = builder.initial_data.unwrap_or_default();
 
         let entry_dispatches = builder.dispatches.unwrap_or_default();
 
