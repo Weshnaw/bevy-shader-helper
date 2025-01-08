@@ -3,7 +3,7 @@ use bevy::{
     prelude::*,
     render::{gpu_readback::ReadbackComplete, render_resource::Extent3d},
 };
-use bevy_shazzy::prelude::*;
+use bevy_shazzy::{BuildableShader, prelude::ReadableBuffer};
 use shader::{Foo, HelloBuffers, HelloEntries, HelloShaderPlugin};
 
 mod shader;

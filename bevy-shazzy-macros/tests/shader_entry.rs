@@ -1,4 +1,4 @@
-use bevy_shader_helper::internals::prelude::ShaderEntry;
+use bevy_shazzy::internals::prelude::ShaderEntry;
 
 #[test]
 fn test_entry_macro() {

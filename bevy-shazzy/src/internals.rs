@@ -7,14 +7,12 @@ pub mod pipeline;
 pub mod plugin;
 
 pub mod prelude {
-    pub use super::binding::ShaderDataDetails;
     pub use super::buffers::*;
     pub use super::entries::ShaderEntry;
     pub use super::plugin::ShaderPlugin;
     pub use crate::ImageBuilder;
     pub use crate::texture_details::*;
 
-    pub use bevy_ecs::prelude::Resource;
     pub use bevy_image::Image;
     pub use bevy_math::*;
     pub use bevy_render::{

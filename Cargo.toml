@@ -1,9 +1,10 @@
 [workspace]
 members = [
-    "bevy-shader-build",
-    "bevy-shader-helper",
-    "bevy-shader-macros",
-    "examples/*"]
+    "bevy-shazzy",
+    "bevy-shazzy-macros",
+    "bevy-shazzy-build",
+    "examples/*"
+]
 resolver = "2"
 
 [workspace.package]
@@ -11,5 +12,6 @@ edition = "2024"
 
 [workspace.dependencies]
 bevy = "0.15"
-bevy-shader-helper = { path = "bevy-shader-helper" }
-bevy-shader-macros = { path = "bevy-shader-macros" }
+bevy-shazzy = { path = "bevy-shazzy", default-features = false }
+bevy-shazzy-macros = { path = "bevy-shazzy-macros" }
+bevy-shazzy-build = { path = "bevy-shazzy-build" }

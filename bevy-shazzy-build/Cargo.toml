@@ -1,6 +1,6 @@
 [package]
-name = "bevy-shader-build"
-version = "0.1.0"
+name = "bevy-shazzy-build"
+version = "0.0.1"
 edition.workspace = true
 
 [dependencies]

@@ -2,7 +2,8 @@ use crate::internals::{binding::GenericBindGroup, pipeline::Pipeline};
 
 use bevy_render::render_resource::{CachedPipelineState, ComputePass, PipelineCache};
 
-pub use bevy_shader_macros::ShaderEntry;
+#[cfg(feature = "derive")]
+pub use bevy_shazzy_macros::ShaderEntry;
 pub trait ShaderEntry {
     fn as_key(&self) -> usize;
 }
@@ -60,6 +61,15 @@ pub(crate) struct Dispatch<EntryTy> {
     pub on_startup: Vec<Entry<EntryTy>>,
     pub on_update: Vec<Entry<EntryTy>>,
     // TODO: on_request: Vec<(receiver, ShaderDispatch)>
+}
+
+impl<EntryTy> Default for Dispatch<EntryTy> {
+    fn default() -> Self {
+        Self {
+            on_startup: vec![],
+            on_update: vec![],
+        }
+    }
 }
 
 impl<T, E1: Into<Vec<Entry<T>>>, E2: Into<Vec<Entry<T>>>> From<(E1, E2)> for Dispatch<T> {

@@ -19,5 +19,5 @@ pub mod bevy {
     pub use bevy_asset::{Handle, Assets};
     pub use bevy_image::Image;
     pub use bevy_ecs::prelude::{Commands, Resource};
-    pub use bevy_ecs;
+    pub use bevy_ecs as ecs;
 }

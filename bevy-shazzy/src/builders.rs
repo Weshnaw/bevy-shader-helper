@@ -4,8 +4,13 @@ use bevy_asset::RenderAssetUsages;
 use bevy_image::Image;
 use bevy_render::render_resource::{Extent3d, TextureDimension, TextureFormat};
 
-use crate::internals::entries::{Dispatch, Entry};
-use crate::texture_details::{ToTextureDimension, ToTextureFormat};
+use crate::{
+    internals::{
+        buffers::BufferGroup,
+        entries::{Dispatch, Entry},
+    },
+    texture_details::{ToTextureDimension, ToTextureFormat},
+};
 
 #[derive(Clone, Default)]
 pub enum ImageData {
@@ -44,6 +49,12 @@ pub struct ImageBuilder<F, D> {
     _phantom_format: PhantomData<D>,
 }
 
+impl<F, D> Default for ImageBuilder<F, D> {
+    fn default() -> Self {
+        Self { size: Default::default(), data: Default::default(), _phantom_dimension: Default::default(), _phantom_format: Default::default() }
+    }
+}
+
 impl<F, D> Clone for ImageBuilder<F, D> {
     fn clone(&self) -> Self {
         Self {
@@ -74,14 +85,25 @@ impl<F, D> From<Extent3d> for ImageBuilder<F, D> {
     }
 }
 
-pub struct ShaderBuilder<T: ?Sized, DataTy, EntriesTy> {
-    pub(crate) initial_data: Option<DataTy>,
+pub struct ShaderBuilder<
+    PluginTy: ?Sized,
+    EntriesTy,
+    BuffersTy: BufferGroup<B, E>,
+    const B: usize,
+    const E: usize,
+> {
+    pub(crate) initial_data: Option<BuffersTy::Initializer>,
     pub(crate) dispatches: Option<Dispatch<EntriesTy>>,
-    _phantom: PhantomData<T>,
+    _phantom: PhantomData<PluginTy>,
 }
 
-impl<DataTy, EntriesTy, T: BuildableShader<DataTy, EntriesTy>> Default
-    for ShaderBuilder<T, DataTy, EntriesTy>
+impl<
+    EntriesTy,
+    PluginTy: BuildableShader<EntriesTy, BuffersTy, B, E>,
+    BuffersTy: BufferGroup<B, E>,
+    const B: usize,
+    const E: usize,
+> Default for ShaderBuilder<PluginTy, EntriesTy, BuffersTy, B, E>
 {
     fn default() -> Self {
         Self {
@@ -92,14 +114,21 @@ impl<DataTy, EntriesTy, T: BuildableShader<DataTy, EntriesTy>> Default
     }
 }
 
-impl<DataTy, EntriesTy, T: BuildableShader<DataTy, EntriesTy>> ShaderBuilder<T, DataTy, EntriesTy> {
-    pub fn initial_data(mut self, data: DataTy) -> Self {
+impl<
+    EntriesTy,
+    PluginTy: BuildableShader<EntriesTy, BuffersTy, B, E>,
+    BuffersTy: BufferGroup<B, E>,
+    const B: usize,
+    const E: usize,
+> ShaderBuilder<PluginTy, EntriesTy, BuffersTy, B, E>
+{
+    pub fn initial_data(mut self, data: BuffersTy::Initializer) -> Self {
         self.initial_data = Some(data);
 
         self
     }
 
-    pub fn on_startup<E: Into<Vec<Entry<EntriesTy>>>>(mut self, entries: E) -> Self {
+    pub fn on_startup<Entries: Into<Vec<Entry<EntriesTy>>>>(mut self, entries: Entries) -> Self {
         let dispatch = match self.dispatches {
             Some(mut dispatch) => {
                 dispatch.on_startup = entries.into();
@@ -115,7 +144,7 @@ impl<DataTy, EntriesTy, T: BuildableShader<DataTy, EntriesTy>> ShaderBuilder<T, 
 
         self
     }
-    pub fn on_update<E: Into<Vec<Entry<EntriesTy>>>>(mut self, entries: E) -> Self {
+    pub fn on_update<Entries: Into<Vec<Entry<EntriesTy>>>>(mut self, entries: Entries) -> Self {
         let dispatch = match self.dispatches {
             Some(mut dispatch) => {
                 dispatch.on_update = entries.into();
@@ -132,14 +161,14 @@ impl<DataTy, EntriesTy, T: BuildableShader<DataTy, EntriesTy>> ShaderBuilder<T, 
         self
     }
 
-    pub fn build(self) -> T {
-        T::from_builder(self)
+    pub fn build(self) -> PluginTy {
+        PluginTy::from_builder(self)
     }
 }
 
-pub trait BuildableShader<DataTy, EntriesTy> {
-    fn from_builder(builder: ShaderBuilder<Self, DataTy, EntriesTy>) -> Self;
-    fn builder() -> ShaderBuilder<Self, DataTy, EntriesTy>
+pub trait BuildableShader<DataTy, BuffersTy: BufferGroup<B, E>, const B: usize, const E: usize> {
+    fn from_builder(builder: ShaderBuilder<Self, DataTy, BuffersTy, B, E>) -> Self;
+    fn builder() -> ShaderBuilder<Self, DataTy, BuffersTy, B, E>
     where
         Self: Sized,
     {

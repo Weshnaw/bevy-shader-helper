@@ -359,8 +359,22 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy-shader-build"
-version = "0.1.0"
+name = "bevy-shazzy"
+version = "0.0.1"
+dependencies = [
+ "bevy-shazzy-macros",
+ "bevy_app",
+ "bevy_asset",
+ "bevy_ecs",
+ "bevy_image",
+ "bevy_math",
+ "bevy_render",
+ "tracing",
+]
+
+[[package]]
+name = "bevy-shazzy-build"
+version = "0.0.1"
 dependencies = [
  "naga",
  "prettyplease",
@@ -372,24 +386,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy-shader-helper"
-version = "0.1.0"
+name = "bevy-shazzy-macros"
+version = "0.0.1"
 dependencies = [
- "bevy-shader-macros",
- "bevy_app",
- "bevy_asset",
- "bevy_ecs",
- "bevy_image",
- "bevy_math",
- "bevy_render",
- "tracing",
-]
-
-[[package]]
-name = "bevy-shader-macros"
-version = "0.1.0"
-dependencies = [
- "bevy-shader-helper",
+ "bevy-shazzy",
  "proc-macro2",
  "quote",
  "syn",
@@ -2393,7 +2393,15 @@ name = "hello_world_no_builder"
 version = "0.1.0"
 dependencies = [
  "bevy",
- "bevy-shader-helper",
+ "bevy-shazzy",
+]
+
+[[package]]
+name = "hello_world_no_derive"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "bevy-shazzy",
 ]
 
 [[package]]

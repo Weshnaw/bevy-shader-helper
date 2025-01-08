@@ -1,23 +1,36 @@
+use std::{borrow::Cow, sync::Arc};
+
 use bevy_app::App;
 use bevy_asset::{Asset, Assets, Handle};
-use bevy_ecs::system::{Commands, ResMut};
+use bevy_ecs::{
+    schedule::{IntoSystemConfigs, SystemConfigs},
+    system::{Commands, ResMut},
+};
 use bevy_image::Image;
 use bevy_render::{
     extract_resource::{ExtractResource, ExtractResourcePlugin},
     gpu_readback::Readback,
     render_asset::RenderAssets,
     render_resource::{
-        BindGroupEntries, BindingResource, BufferUsages, IntoBinding, ShaderType, TextureUsages,
-        encase::internal::WriteInto,
+        BindGroupEntries, BindGroupLayout, BindGroupLayoutEntries, BindingResource, BufferUsages,
+        CachedComputePipelineId, ComputePipelineDescriptor, IntoBinding, PipelineCache, Shader,
+        ShaderStages, ShaderType, TextureUsages, encase::internal::WriteInto,
     },
     storage::{GpuShaderStorageBuffer, ShaderStorageBuffer},
     texture::GpuImage,
 };
 
-pub use bevy_shader_macros::BufferGroup;
-pub trait BufferGroup<DataTy: Clone, const B: usize> {
-    fn label() -> Option<&'static str> {
+#[cfg(feature = "derive")]
+pub use bevy_shazzy_macros::BufferGroup;
+pub trait BufferGroup<const B: usize, const E: usize> {
+    type Initializer: Send + Sync + 'static + Clone;
+
+    fn bind_group_label() -> Option<&'static str> {
         // TODO: make this the correct return type -> impl wgpu::Label<'a>
+        None
+    }
+
+    fn bind_group_layout_label() -> Option<&'static str> {
         None
     }
 
@@ -28,6 +41,35 @@ pub trait BufferGroup<DataTy: Clone, const B: usize> {
         app.add_plugins((ExtractResourcePlugin::<Self>::default(),));
     }
 
+    fn create_entry(
+        pipeline_cache: &PipelineCache,
+        layout: BindGroupLayout,
+        shader: Handle<Shader>,
+        entry: &'static str,
+        label: Option<Cow<'static, str>>,
+    ) -> CachedComputePipelineId {
+        pipeline_cache.queue_compute_pipeline(ComputePipelineDescriptor {
+            label,
+            layout: vec![layout],
+            push_constant_ranges: vec![],
+            shader,
+            shader_defs: vec![],
+            entry_point: entry.into(),
+            zero_initialize_workgroup_memory: false,
+        })
+    }
+
+    fn create_setup(i: Arc<Self::Initializer>) -> SystemConfigs {
+        let i = i.clone();
+        let f = move |mut commands: Commands,
+                      mut buffers: ResMut<Assets<ShaderStorageBuffer>>,
+                      mut images: ResMut<Assets<Image>>| {
+            Self::insert_resources(&mut commands, &mut buffers, &mut images, i.as_ref().clone());
+        };
+
+        f.into_configs()
+    }
+    
     fn get_bindings<'a>(
         &'a self,
         buffers: &'a RenderAssets<GpuShaderStorageBuffer>,
@@ -38,8 +80,16 @@ pub trait BufferGroup<DataTy: Clone, const B: usize> {
         commands: &mut Commands,
         buffers: &mut Assets<ShaderStorageBuffer>,
         images: &mut Assets<Image>,
-        d: DataTy,
+        d: Self::Initializer,
     );
+
+    fn buffer_entries(stage: ShaderStages) -> BindGroupLayoutEntries<B>;
+
+    fn entries(
+        pipeline_cache: &PipelineCache,
+        layout: BindGroupLayout,
+        shader: Handle<Shader>,
+    ) -> [CachedComputePipelineId; E];
 }
 
 pub fn create_storage_buffer<DataTy: ShaderType + WriteInto>(

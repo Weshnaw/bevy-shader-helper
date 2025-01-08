@@ -1,0 +1,16 @@
+[package]
+name = "bevy-shazzy-macros"
+version = "0.0.1"
+edition.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { version = "2.0", features = ["extra-traits"] }
+quote = "1.0"
+proc-macro2 = "1.0.92"
+
+
+[dev-dependencies]
+bevy-shazzy = { workspace = true }

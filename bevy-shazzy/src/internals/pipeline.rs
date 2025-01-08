@@ -10,7 +10,7 @@ use bevy_render::{
     renderer::RenderDevice,
 };
 
-use super::{binding::ShaderDataDetails, entries::ShaderEntry};
+use super::{buffers::BufferGroup, entries::ShaderEntry};
 
 pub trait Pipeline {
     fn label() -> Option<&'static str> {
@@ -21,13 +21,13 @@ pub trait Pipeline {
 }
 
 #[derive(Resource)]
-pub struct ComputePipeline<const B: usize, const E: usize, DataTy> {
+pub struct ComputePipeline<const B: usize, const E: usize, BuffersTy> {
     pub layout: BindGroupLayout,
     pub entries: [CachedComputePipelineId; E],
-    _phantom: PhantomData<DataTy>,
+    _phantom: PhantomData<BuffersTy>,
 }
 
-impl<const B: usize, const E: usize, DataTy> Pipeline for ComputePipeline<B, E, DataTy> {
+impl<const B: usize, const E: usize, BuffersTy> Pipeline for ComputePipeline<B, E, BuffersTy> {
     fn layout(&self) -> &BindGroupLayout {
         &self.layout
     }
@@ -37,19 +37,19 @@ impl<const B: usize, const E: usize, DataTy> Pipeline for ComputePipeline<B, E, 
     }
 }
 
-impl<const B: usize, const E: usize, DataTy: ShaderDataDetails<B, E>> FromWorld
-    for ComputePipeline<B, E, DataTy>
+impl<const B: usize, const E: usize, BuffersTy: BufferGroup<B, E>> FromWorld
+    for ComputePipeline<B, E, BuffersTy>
 {
     fn from_world(world: &mut World) -> Self {
         let render_device = world.resource::<RenderDevice>();
         let layout = render_device.create_bind_group_layout(
-            DataTy::bind_group_label(),
-            &DataTy::buffer_entries(ShaderStages::COMPUTE),
+            BuffersTy::bind_group_label(),
+            &BuffersTy::buffer_entries(ShaderStages::COMPUTE),
         );
 
         let shader = world.load_asset("shaders/hello.wgsl");
         let pipeline_cache = world.resource::<PipelineCache>();
-        let entries = DataTy::entries(pipeline_cache, layout.clone(), shader);
+        let entries = BuffersTy::entries(pipeline_cache, layout.clone(), shader);
         Self {
             layout,
             entries,
@@ -57,3 +57,4 @@ impl<const B: usize, const E: usize, DataTy: ShaderDataDetails<B, E>> FromWorld
         }
     }
 }
+
