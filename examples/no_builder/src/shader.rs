@@ -2,7 +2,6 @@ use bevy_shazzy::internals::prelude::*;
 
 pub type HelloShaderPlugin = ShaderPlugin<HelloBuffers, 4, 2>;
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub enum HelloEntries {
     Main,
     Update,

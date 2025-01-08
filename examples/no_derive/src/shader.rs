@@ -15,7 +15,6 @@ use bevy_shazzy::internals::prelude::*;
 
 pub type HelloShaderPlugin = ShaderPlugin<HelloBuffers, 4, 2>;
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub enum HelloEntries {
     Main,
     Update,
@@ -67,8 +66,8 @@ impl BufferGroup<4, 2> for HelloBuffers {
     ) {
         commands.insert_resource(Self {
             a: create_storage_buffer(buffers, d.a, true).into(),
-            b: create_storage_buffer(buffers, d.b, true).into(),
-            c: create_storage_buffer(buffers, d.c, true).into(),
+            b: create_storage_buffer(buffers, d.b, false).into(),
+            c: create_storage_buffer(buffers, d.c, false).into(),
             d: create_texture_buffer(images, d.d, true).into(),
         });
     }

@@ -12,6 +12,7 @@ Inspired from [prost-build](https://github.com/tokio-rs/prost), and [bevy_easy_c
     - [ ] Create macro to import generatedgi rust file
 - [ ] Implement Readable/Writable Buffer traits
 - [ ] Implement texture_details
+- [ ] Derive macro should have a 'uniform' buffer attribute (relavent to buffer_entries function)
 
 ## TODOs Medium Term
 - [ ] Cleanup the imports to use the more specific ones instead of the entirety of bevy
