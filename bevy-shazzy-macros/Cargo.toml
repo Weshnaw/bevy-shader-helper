@@ -7,10 +7,9 @@ edition.workspace = true
 proc-macro = true
 
 [dependencies]
-syn = { version = "2.0", features = ["extra-traits"] }
+syn = "2.0"
 quote = "1.0"
-proc-macro2 = "1.0.92"
-
+bevy-shazzy-tokens = { workspace = true }
 
 [dev-dependencies]
-bevy-shazzy = { workspace = true }
+bevy-shazzy = { workspace = true, features = ["derive"] }

@@ -20,9 +20,8 @@ Inspired from [prost-build](https://github.com/tokio-rs/prost), and [bevy_easy_c
 - [ ] Doc comments...
 - [ ] github actions...
 - [ ] better logging...
-- [ ] improve macros by restricting fields 
+- [ ] improve macros by restricting fields
 - [ ] can I implement build such that it avoids using the derive macros?
-  
 
 ## TODOs Long Term
 - [ ] Allow for more dynamic shaders (i.e. Bevy's GOL example where they swap the image buffers)
@@ -31,7 +30,10 @@ Inspired from [prost-build](https://github.com/tokio-rs/prost), and [bevy_easy_c
 - [ ] Have someone who knows macros better refactor some of the less then optimal code
 - [ ] More rigorous unit testing
 - [ ] Better compiler errors
-    - [ ] Maybe somehow have use functions from the macro tools 
+    - [ ] Maybe somehow have use functions from the macro tools
+
+## TODO open issues
+- [ ] rename BufferGroup::buffer_entries to be BufferGroup::bind_group_layout, and probably change get_bindings to bind_group_entries
 
 ## Unknown Feasibility
 - [ ] Somehow combine ShaderBuffers and ShaderData

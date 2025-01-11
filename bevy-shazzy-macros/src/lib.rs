@@ -1,6 +1,6 @@
+use bevy_shazzy_tokens::buffers::ShaderBuffer;
 use proc_macro::TokenStream;
-
-mod internals;
+use syn::DeriveInput;
 
 // TODO: add impl / Check that BufferGroups are ExtractResource and by extension Clone
 // TODO: restrict BufferGroup to structs which fields are all Buffer Types
@@ -10,5 +10,11 @@ mod internals;
     attributes(entry, writeable, write_only, texture, shader_type)
 )]
 pub fn buffer_group(input: TokenStream) -> TokenStream {
-    internals::buffers::expand(input)
+    let input = syn::parse_macro_input!(input as DeriveInput);
+
+    let shader = ShaderBuffer::from(input);
+
+    let shader = quote::quote! {#shader};
+    // panic!("{}", shader.to_string());
+    shader.into()
 }

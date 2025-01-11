@@ -3,7 +3,8 @@ members = [
     "bevy-shazzy",
     "bevy-shazzy-macros",
     "bevy-shazzy-build",
-    "examples/*"
+    "examples/*",
+    "bevy-shazzy-tokens",
 ]
 resolver = "2"
 
@@ -14,4 +15,5 @@ edition = "2024"
 bevy = "0.15"
 bevy-shazzy = { path = "bevy-shazzy", default-features = false }
 bevy-shazzy-macros = { path = "bevy-shazzy-macros" }
+bevy-shazzy-tokens = { path = "bevy-shazzy-tokens" }
 bevy-shazzy-build = { path = "bevy-shazzy-build" }

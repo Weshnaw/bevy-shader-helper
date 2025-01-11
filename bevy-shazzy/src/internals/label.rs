@@ -21,7 +21,7 @@ impl<T> Debug for ShaderLabel<T> {
 
 impl<T> Clone for ShaderLabel<T> {
     fn clone(&self) -> Self {
-        Self(self.0.clone())
+        Self(self.0)
     }
 }
 

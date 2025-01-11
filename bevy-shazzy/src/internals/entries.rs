@@ -32,7 +32,7 @@ impl Entry {
         pipeline_cache: &'a PipelineCache,
         pipeline: &'a PipelineTy,
     ) -> &'a CachedPipelineState {
-        pipeline_cache.get_compute_pipeline_state(pipeline.get_id(self.entry as usize))
+        pipeline_cache.get_compute_pipeline_state(pipeline.get_id(self.entry))
     }
 
     fn dispatch<PipelineTy: Pipeline>(
@@ -50,20 +50,11 @@ impl Entry {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub(crate) struct Dispatch {
     pub on_startup: Vec<Entry>,
     pub on_update: Vec<Entry>,
     // TODO: on_request: Vec<(receiver, ShaderDispatch)>
-}
-
-impl Default for Dispatch {
-    fn default() -> Self {
-        Self {
-            on_startup: vec![],
-            on_update: vec![],
-        }
-    }
 }
 
 impl<E1: Into<Vec<Entry>>, E2: Into<Vec<Entry>>> From<(E1, E2)> for Dispatch {
