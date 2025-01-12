@@ -4,14 +4,9 @@ Inspired from [prost-build](https://github.com/tokio-rs/prost), and [bevy_easy_c
 
 # TODOs
 ## TODOs Short Term
-- [ ] Implement build
-    - [ ] Handle Entries (Only Compute for now)
-    - [ ] Handle Buffers
-    - [ ] Generate valid rust file
-    - [ ] Insert rust file into the proper directory
-    - [ ] Create macro to import generatedgi rust file
 - [ ] Implement Readable/Writable Buffer traits
 - [ ] Implement texture_details
+- [ ] Add a way to share buffers
 - [ ] Derive macro should have a 'uniform' buffer attribute (relavent to buffer_entries function)
 
 ## TODOs Medium Term
@@ -25,6 +20,12 @@ Inspired from [prost-build](https://github.com/tokio-rs/prost), and [bevy_easy_c
 
 ## TODOs Long Term
 - [ ] Allow for more dynamic shaders (i.e. Bevy's GOL example where they swap the image buffers)
+- [ ] Implement build
+    - [ ] Handle Entries (Only Compute for now)
+    - [ ] Handle Buffers
+    - [ ] Generate valid rust file
+    - [ ] Insert rust file into the proper directory
+    - [ ] Create macro to import generatedgi rust file
 - [ ] Allow for Custom Shader Nodes
 - [ ] Implement some system for other types of shaders (i.e. Vertex and Fragment shaders)
 - [ ] Have someone who knows macros better refactor some of the less then optimal code
