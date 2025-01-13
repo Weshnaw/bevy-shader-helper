@@ -7,11 +7,7 @@ use bevy_render::{
     renderer::RenderContext,
 };
 
-use super::{
-    binding::GenericBindGroup,
-    entries::Dispatch,
-    pipeline::Pipeline,
-};
+use super::{binding::GenericBindGroup, entries::Dispatch, pipeline::Pipeline};
 
 #[derive(Default)]
 pub(super) enum ShaderStage {

@@ -33,7 +33,11 @@ impl<const B: usize, const E: usize, BuffersTy> Pipeline for ComputePipeline<B, 
     }
 
     fn get_id(&self, entry: usize) -> CachedComputePipelineId {
-        assert!(entry < E, "Invalid shader entry id, shader only has {} entries", E);
+        assert!(
+            entry < E,
+            "Invalid shader entry id, shader only has {} entries",
+            E
+        );
         self.entries[entry]
     }
 }

@@ -7,7 +7,7 @@ pub use crate::builders::*;
 pub mod prelude {
     pub use crate::{
         BuildableShader, ImageBuilder, ImageData,
-        internals::buffers::{ReadableBuffer, WriteableBuffer},
+        internals::buffers::{CPUReadableBuffer, CPUWriteableBuffer},
     };
 }
 

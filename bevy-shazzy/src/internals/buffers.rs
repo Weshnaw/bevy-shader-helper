@@ -137,11 +137,6 @@ impl<T: Asset> From<Handle<T>> for WriteBuffer<T> {
         Self { handle: data }
     }
 }
-impl ReadableBuffer for WriteBuffer<ShaderStorageBuffer> {
-    fn readback(&self) -> Readback {
-        Readback::Buffer(self.handle.clone())
-    }
-}
 
 pub struct ReadBuffer<T: Asset> {
     pub handle: Handle<T>,
@@ -156,17 +151,6 @@ impl<T: Asset> Clone for ReadBuffer<T> {
 impl<T: Asset> From<Handle<T>> for ReadBuffer<T> {
     fn from(data: Handle<T>) -> Self {
         Self { handle: data }
-    }
-}
-impl WriteableBuffer for ReadBuffer<ShaderStorageBuffer> {
-    type T = ShaderStorageBuffer;
-
-    fn get_mut<'a>(&'a self, _buffers: &'a mut ResMut<Assets<Self::T>>) -> &'a mut Self::T
-    where
-        Self::T: Asset,
-    {
-        let _ = self.handle;
-        todo!()
     }
 }
 
@@ -185,28 +169,79 @@ impl<T: Asset> From<Handle<T>> for ReadWriteBuffer<T> {
         Self { handle: data }
     }
 }
-impl ReadableBuffer for ReadWriteBuffer<ShaderStorageBuffer> {
+
+// The traits are CPUT land Read/Write terms so:
+// Readable  -> GPU Wrote some data that I want to read via readback
+// Writeable -> GPU wants to read some data from the buffer
+pub trait CPUReadableBuffer {
+    fn readback(&self) -> Readback;
+}
+impl CPUReadableBuffer for WriteBuffer<ShaderStorageBuffer> {
     fn readback(&self) -> Readback {
         Readback::Buffer(self.handle.clone())
     }
 }
-impl ReadableBuffer for ReadWriteBuffer<Image> {
+impl CPUReadableBuffer for WriteBuffer<Image> {
+    fn readback(&self) -> Readback {
+        Readback::Texture(self.handle.clone())
+    }
+}
+impl CPUReadableBuffer for ReadWriteBuffer<ShaderStorageBuffer> {
+    fn readback(&self) -> Readback {
+        Readback::Buffer(self.handle.clone())
+    }
+}
+impl CPUReadableBuffer for ReadWriteBuffer<Image> {
     fn readback(&self) -> Readback {
         Readback::Texture(self.handle.clone())
     }
 }
 
-// The traits are CPUT land Read/Write terms so:
-// Readable  -> GPU Wrote some data that I want to read via readback
-// Writeable -> GPU wants to read some data from the buffer
-pub trait ReadableBuffer {
-    fn readback(&self) -> Readback;
-}
-pub trait WriteableBuffer {
+pub trait CPUWriteableBuffer {
     type T;
-    fn get_mut<'a>(&'a self, buffers: &'a mut ResMut<Assets<Self::T>>) -> &'a mut Self::T
+    fn get_mut<'a>(&'_ self, buffers: &'a mut ResMut<Assets<Self::T>>) -> &'a mut Self::T
     where
         Self::T: Asset;
+}
+impl CPUWriteableBuffer for ReadBuffer<ShaderStorageBuffer> {
+    type T = ShaderStorageBuffer;
+
+    fn get_mut<'a>(&'_ self, buffers: &'a mut ResMut<Assets<Self::T>>) -> &'a mut Self::T
+    where
+        Self::T: Asset,
+    {
+        buffers.get_mut(self.handle.id()).unwrap()
+    }
+}
+impl CPUWriteableBuffer for ReadBuffer<Image> {
+    type T = Image;
+
+    fn get_mut<'a>(&'_ self, buffers: &'a mut ResMut<Assets<Self::T>>) -> &'a mut Self::T
+    where
+        Self::T: Asset,
+    {
+        buffers.get_mut(self.handle.id()).unwrap()
+    }
+}
+impl CPUWriteableBuffer for ReadWriteBuffer<ShaderStorageBuffer> {
+    type T = ShaderStorageBuffer;
+
+    fn get_mut<'a>(&'_ self, buffers: &'a mut ResMut<Assets<Self::T>>) -> &'a mut Self::T
+    where
+        Self::T: Asset,
+    {
+        buffers.get_mut(self.handle.id()).unwrap()
+    }
+}
+impl CPUWriteableBuffer for ReadWriteBuffer<Image> {
+    type T = Image;
+
+    fn get_mut<'a>(&'_ self, buffers: &'a mut ResMut<Assets<Self::T>>) -> &'a mut Self::T
+    where
+        Self::T: Asset,
+    {
+        buffers.get_mut(self.handle.id()).unwrap()
+    }
 }
 
 pub trait HandleIntoBinding {
@@ -235,7 +270,6 @@ impl HandleIntoBinding for WriteBuffer<ShaderStorageBuffer> {
             .as_entire_binding()
     }
 }
-
 impl HandleIntoBinding for ReadWriteBuffer<ShaderStorageBuffer> {
     type T = RenderAssets<GpuShaderStorageBuffer>;
     fn binding<'b>(&self, assets: &'b Self::T) -> BindingResource<'b> {
@@ -267,7 +301,6 @@ impl HandleIntoBinding for WriteBuffer<Image> {
             .into_binding()
     }
 }
-
 impl HandleIntoBinding for ReadWriteBuffer<Image> {
     type T = RenderAssets<GpuImage>;
     fn binding<'b>(&self, assets: &'b Self::T) -> BindingResource<'b> {

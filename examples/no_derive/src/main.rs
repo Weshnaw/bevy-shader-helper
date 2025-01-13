@@ -1,9 +1,14 @@
 use bevy::{
     math::vec3,
     prelude::*,
-    render::{gpu_readback::ReadbackComplete, render_resource::Extent3d},
+    render::{
+        gpu_readback::ReadbackComplete, render_resource::Extent3d, storage::ShaderStorageBuffer,
+    },
 };
-use bevy_shazzy::{BuildableShader, prelude::ReadableBuffer};
+use bevy_shazzy::{
+    BuildableShader,
+    prelude::{CPUReadableBuffer, CPUWriteableBuffer},
+};
 use shader::{Foo, HelloBuffers, HelloEntries, HelloShaderPlugin};
 
 mod shader;
@@ -30,18 +35,24 @@ fn main() {
     App::new()
         .add_plugins((DefaultPlugins, shader))
         .add_systems(Startup, setup_readers)
+        .add_systems(Update, write_buffer)
         .run();
 }
 
-fn setup_readers(mut commands: Commands, buffers: Res<HelloBuffers>) {
+fn write_buffer(hello_bufs: Res<HelloBuffers>, mut buffers: ResMut<Assets<ShaderStorageBuffer>>) {
+    let b = hello_bufs.b.get_mut(&mut buffers);
+    b.set_data(Foo { bar: 5, bazz: 1. });
+}
+
+fn setup_readers(mut commands: Commands, hello_bufs: Res<HelloBuffers>) {
     commands
-        .spawn(buffers.a.readback())
+        .spawn(hello_bufs.a.readback())
         .observe(|t: Trigger<ReadbackComplete>| {
             let data: Vec<u32> = t.event().to_shader_type();
             info!(?data);
         });
     commands
-        .spawn(buffers.d.readback())
+        .spawn(hello_bufs.d.readback())
         .observe(|t: Trigger<ReadbackComplete>| {
             let data: Vec<f32> = t.event().to_shader_type();
             info!(?data);
